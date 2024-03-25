@@ -1,17 +1,17 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Intentd from "../pages/intentd/Itentd";
+import IntentList from "../pages/IntentList";
 import NotFound from "../pages/NotFound";
+import IntentInfo from "../pages/IntentInfo";
 
 const PageRoutes = () => {
   return (
     <>
-      <BrowserRouter basename="/">
-        <Routes>
-          <Route path="/" element={<Intentd />}></Route>
-          <Route path="*" element={<NotFound />}></Route>
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path="/" element={<IntentList />}></Route>
+        <Route path="/intent/*" element={<IntentInfo />}></Route>
+        <Route path="*" element={<NotFound />}></Route>
+      </Routes>
     </>
   );
 };

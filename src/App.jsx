@@ -1,14 +1,17 @@
 import React from "react";
 import styled from "styled-components";
-import GlobalStyle from "./GlobalStyle";
-import Header from "../components/Header";
-import SideMenu from "./SideMenu";
+import GlobalStyle from "./components/GlobalStyle";
+import Header from "./components/Header";
+import SideMenu from "./components/SideMenu";
 
-import PageRoutes from "../routes/PageRoutes";
+import PageRoutes from "./routes/PageRoutes";
+import { BrowserRouter } from "react-router-dom";
+
+import "./styles/index.css";
 
 function App() {
   return (
-    <>
+    <BrowserRouter basename="/">
       <Container>
         <SideMenu />
         <ContentWrap>
@@ -17,18 +20,16 @@ function App() {
         </ContentWrap>
       </Container>
       <GlobalStyle />
-    </>
+    </BrowserRouter>
   );
 }
 
 const Container = styled.div`
   display: flex;
-  /* background-color: black; */
   background-color: #eff2f8;
 `;
 const ContentWrap = styled.div`
-  width: 90%;
-  /* background-color: blue; */
+  width: calc(100% - 240px);
 `;
 
 export default App;
