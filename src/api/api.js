@@ -7,13 +7,13 @@ const api = axios.create({
   }
 });
 
-export const getIntents = async () => {
+export const getIntentsCall = async () => {
   // 인텐트 리스트 불러오기
   const response = await api.post(`intent/all`, {});
   return response.data;
 };
 
-export const deletedIntend = async (id) => {
+export const deletedIntendCall = async (id) => {
   const response = await api.delete(`intent/${id}`);
-  console.log(response);
+  return response;
 };

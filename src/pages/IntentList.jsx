@@ -1,40 +1,57 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import Card from "../components/Card";
-import { useDispatch, useSelector } from "react-redux";
-import { selectIndent, getIntentList } from "../reducers/action";
 import { useNavigate } from "react-router-dom";
-import { deletedIntend } from "../api/api";
-
+import { deletedIntendCall, getIntentsCall } from "../api/api";
+import { alertConfirm, alertSuccess, alertError } from "../utils/alert";
 const IntentList = () => {
-  const dispatch = useDispatch();
+  const [intentList, setIntentList] = useState([]);
   const navigate = useNavigate();
 
-  // useEffect(() => {}, []);
-  // useSelector((state) => console.log(state));
-
-  const intents = useSelector((state) => state.intentReducer.indentList);
-  // console.log(intents);
+  // 페이지 진입시
+  useEffect(() => {
+    const setData = async () => {
+      const data = await getIntentsCall();
+      setIntentList(data);
+    };
+    setData();
+  }, []);
 
   const clickHandler = async (e) => {
     const intentId = e.currentTarget.dataset.itemid;
-    dispatch(selectIndent(intentId));
-
-    const link = `/intent/${intentId}`;
-    navigate(link);
+    navigate(`/intent/${intentId}`);
   };
 
   const deletHandler = (e) => {
     const intentId = e.currentTarget.previousElementSibling.dataset.itemid;
-    deletedIntend(intentId);
 
-    dispatch(getIntentList());
+    alertConfirm({
+      icon: "question",
+      title: "삭제",
+      text: "삭제하시겠습니까?",
+      callback: () => {
+        //state 변경
+        setIntentList((prevIntentList) =>
+          prevIntentList.filter((intent) => intent.intentId !== intentId)
+        );
+        //삭제 API call
+        deletedIntendCall(intentId)
+          .then((res) => {
+            if (res.data === "deleted successfully") {
+              alertSuccess({
+                title: "삭제",
+                text: "정상적으로 삭제되었습니다"
+              });
+            }
+          })
+          .catch((err) => alertError(err));
+      }
+    });
   };
 
   return (
     <>
       <div className="card_grid">
-        {intents.map((item, idx) => {
+        {intentList.map((item, idx) => {
           return (
             <Card
               name={item.intentNm}

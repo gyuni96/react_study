@@ -1,4 +1,4 @@
-export const GET_INDENT_LIST = "GET_INDENT_LIST";
+export const DELETE_INDENT = "DELETE_INDENT";
 export const SELECT_INDENT = "SELECT_INDENT";
 
 export const selectIndent = (payload) => ({
@@ -6,6 +6,7 @@ export const selectIndent = (payload) => ({
   payload
 });
 
-export const getIntentList = () => ({
-  type: GET_INDENT_LIST
+export const deleteIntend = (payload) => ({
+  type: DELETE_INDENT,
+  payload
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const Content = ({ name, id, desc, clickHandler, deletHandler }) => {
+const Card = ({ name, id, desc, clickHandler, deletHandler }) => {
   return (
     <>
       <CardWrap>
@@ -30,6 +30,9 @@ const CardWrap = styled.div`
   margin-bottom: 20px;
   padding-left: 30px;
   transition: 0.3s ease;
+  /* box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.15),
+    0 10px 10px rgba(0, 0, 0, 0.12); */
   &:hover {
     background-color: #2d2ddd;
     color: #fff;
@@ -62,7 +65,7 @@ const ContentDeletedButton = styled.div`
   position: absolute;
   bottom: 20px;
   right: 15px;
-  font-size: 2em;
+  cursor: pointer;
 `;
 
-export default Content;
+export default Card;

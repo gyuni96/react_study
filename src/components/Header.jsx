@@ -17,11 +17,12 @@ const Header = (props) => {
 const HeaderWrap = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 40px;
   background-color: #eff2f8;
   position: relative;
-  padding: 15px 0 0 25px;
-  max-width: 1500px;
+  padding: 15px 0 0 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const Navigation = styled.span`
@@ -29,9 +30,7 @@ const Navigation = styled.span`
 `;
 
 const UserWrap = styled.div`
-  position: absolute;
-  top: 10;
-  right: 45px;
+  padding-right: 30px;
 `;
 
 export default Header;

@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import intentReducer from "./intentSlice";
+import intentReducer from "./reducer";
 
 const store = configureStore({
   reducer: { intentReducer }

@@ -67,15 +67,124 @@
 }
 
 .card_grid {
-  padding: 20px 10px;
+  padding: 30px 0;
   background-color: #eff2f8;
   display: grid;
   justify-items: center;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  max-width: 1500px;
 }
 
 .info_wrap {
-  padding: 20px 10px;
+  padding: 30px 0;
+  position: relative;
+}
+.info_button_Wrap {
+  position: absolute;
+  right: 0;
+  top: 8px;
+}
+
+.info_title {
+  font-size: 2em;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.item_wrap {
+  width: 100%;
+  margin-bottom: 25px;
+}
+.item_title {
+  font-size: 1.3em;
+  margin-bottom: 15px;
+}
+.item_input {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 8px 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* 페이징 css */
+
+.paging_list_wrap {
+  width: 100%;
+}
+.paging_list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 15px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom: none;
+  background-color: #fff;
+  height: 35px;
+  box-sizing: border-box;
+}
+.paging_list:first-child {
+  border-radius: 10px 10px 0 0;
+}
+.paging_list:last-child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 10px 10px;
+}
+
+.paging_list_input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 1em;
+  padding: 0;
+}
+.paging_list_input::placeholder {
+  font-size: 1em;
+}
+
+.pagination {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pagingation_item {
+  width: 30px;
+  height: 28px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.pagingation_item:last-child {
+  margin-right: 0px;
+}
+.pagingation_item.active {
+  border: 1px solid blue;
+  border-radius: 10px;
+}
+.pagingation_item.active a {
+  color: blue;
+}
+.pagingation_item a {
+  font-size: 0.9em;
+  color: rgba(0, 0, 0, 0.5);
+  text-decoration: none;
+  outline: none;
+}
+.pagingation_item a:hover,
+.pagingation_item a:active {
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.8);
+}
+.paging_list_btn {
+  color: rgba(0, 0, 0, 0.4);
+  transition: 0.2s ease;
+}
+.paging_list_btn:hover {
+  color: rgba(0, 0, 0, 0.8);
 }

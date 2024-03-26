@@ -27,9 +27,13 @@ function App() {
 const Container = styled.div`
   display: flex;
   background-color: #eff2f8;
+  height: 100vh;
 `;
 const ContentWrap = styled.div`
   width: calc(100% - 240px);
+  max-width: 1600px;
+  padding: 0 35px;
+  overflow-y: scroll;
 `;
 
 export default App;
