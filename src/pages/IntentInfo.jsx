@@ -6,6 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import PagingList from "../components/PagingList";
 import Button from "../components/Button";
 import { alertConfirm } from "../utils/alert";
+import Item from "../components/Item";
+import { getIntentInfoApi } from "../api/api";
 
 const IntentInfo = () => {
   //const intent = useSelector((state) => state.intentReducer.selectedIndent);
@@ -14,101 +16,67 @@ const IntentInfo = () => {
 
   const { intentId } = useParams();
 
-  const [예시문구, set예시문구] = useState([]);
+  const [intentName, setIntentName] = useState("");
+  const [intentDesc, setIntentDesc] = useState("");
+  const [trainingPhrases, setTrainingPhrase] = useState([]);
+  const [rowData, setRowData] = useState([]);
+  const [entityEnum, setEntityEnum] = useState([]);
+  const [responesPhrases, setResponesPhrases] = useState("");
 
   //진입시 intent값이 null이면 메인페이지로 이동
   useEffect(() => {
     intentId == null ? navigate("/") : null;
+
+    const setData = async () => {
+      const data = await getIntentInfoApi(intentId);
+
+      console.log(data);
+
+      setIntentName(data.intentNm);
+      setIntentDesc(data.intentDesc);
+
+      const intentExamples = JSON.parse(data.intentExamples);
+      setTrainingPhrase(intentExamples);
+
+      const entityIds = JSON.parse(data.entityIds);
+      setRowData(entityIds);
+
+      // entity enum
+      const uniqueEntities = entityIds.reduce((acc, cur) => {
+        if (!acc.includes(cur.entityId)) {
+          acc.push(cur.entityId);
+        }
+        return acc;
+      }, []);
+      setEntityEnum(uniqueEntities);
+
+      setResponesPhrases(data.answerPhrase);
+    };
+    setData();
   }, []);
 
-  const [rowData, setRowData] = useState([
-    { Parameter: "Tesla", Entity: "gg", Value: 64950, Prompt: true },
-    { Parameter: "Ford", Entity: "gg", Value: 33850, Prompt: false }
-  ]);
-
   const [colDefs, setColDefs] = useState([
-    { field: "Parameter" },
     {
-      field: "Entity",
+      field: "entityId",
+      headerName: "Entity",
+      width: 200,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: ["English", "Spanish", "French", "Portuguese", "(other)"]
-        // valueListGap: 10
+        values: ["Name", "Service"]
       }
     },
-    { field: "Value" },
-    { field: "Prompt" }
+    { field: "slotPrompt", headerName: "Prompt", flex: 1 }
   ]);
 
   const defaultColDef = useMemo(() => {
     return {
-      width: 200,
       editable: true
     };
   }, []);
 
-  const onCellClicked = (e) => {
-    console.log(e);
-
-    const value = e.value;
-
-    // api 통신으로 해당 required 조회
-  };
-
-  const [trainingPhrases, setTrainingPhrase] = useState([
-    { text: "1aaaaa" },
-    { text: "2aaaaa" },
-    { text: "3aaaaa" },
-    { text: "4aaaaa" },
-    { text: "5aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" },
-    { text: "aaaaa" }
-  ]);
-
   const traningHandleUpdate = (e) => {
-    if (e.target !== e.currentTarget) return;
-    e.stopPropagation();
-
-    if (e.key !== "Enter") return;
-
     const value = { text: e.target.value };
-
     setTrainingPhrase([value, ...trainingPhrases]);
-    e.target.value = "";
-  };
-
-  const [responesPhrases, setResponesPhrases] = useState([
-    { text: "1aaaaa" },
-    { text: "2aaaaa" },
-    { text: "3aaaaa" },
-    { text: "4aaaaa" },
-    { text: "5aaaaa" }
-  ]);
-
-  const responesHandleUpdate = (e) => {
-    if (e.target !== e.currentTarget) return;
-    e.stopPropagation();
-
-    if (e.key !== "Enter") return;
-
-    const value = { text: e.target.value };
-
-    setResponesPhrases([value, ...responesPhrases]);
     e.target.value = "";
   };
 
@@ -120,56 +88,70 @@ const IntentInfo = () => {
     });
   };
 
+  const handleAddRow = () => {
+    setRowData([{ entityId: "", slotPrompt: "" }, ...rowData]);
+  };
+
   return (
     <div className="info_wrap">
-      <div className="info_button_Wrap">
-        <Button onClick={handleSave}>저장</Button>
-      </div>
-      <div className="item_wrap">
-        <h4 className="item_title">Intent Name</h4>
+      <Item
+        title="Intent Name"
+        buttonList={[{ buttonName: "저장", onClick: handleSave }]}
+      >
         <input
           className="item_input"
           type="text"
           placeholder="인텐트명을 입력해주세요"
+          defaultValue={intentName}
         />
-      </div>
-      <div className="item_wrap">
-        <h4 className="item_title">Intent Description</h4>
+      </Item>
+
+      <Item title="Intent Description">
         <input
           className="item_input"
           type="text"
           placeholder="인텐트 설명을 입력해주세요"
+          defaultValue={intentDesc}
         />
-      </div>
+      </Item>
 
-      <div className="item_wrap">
-        <h4 className="item_title">Traning Phrases</h4>
+      <Item title="Traning Phrases">
         <PagingList
           list={trainingPhrases}
+          listCnt={trainingPhrases.length}
           input={true}
           handleUpdate={traningHandleUpdate}
           inputPlaceHolder={"학습 문구를 등록해주세요"}
         />
-      </div>
-      <div className="item_wrap">
-        <div className="ag-theme-quartz" style={{ height: 300 }}>
+      </Item>
+
+      <Item
+        title="Required"
+        buttonList={[{ buttonName: "행추가", onClick: handleAddRow }]}
+      >
+        {/* <div className="info_button_Wrap">
+          <Button onClick={handleAddRow}>행추가</Button>
+        </div> */}
+        <div className="ag-theme-quartz" style={{ height: 310 }}>
           <AgGridReact
             rowData={rowData}
             columnDefs={colDefs}
             defaultColDef={defaultColDef}
-            onCellClicked={onCellClicked}
+            pagination={true} // 페이징 여부
+            paginationPageSize={5} // 페이징 로우갯수
+            paginationPageSizeSelector={[5, 10, 20]} // 페이진 구분
           />
         </div>
-      </div>
-      <div className="item_wrap">
-        <h4 className="item_title">Response Phrases</h4>
-        <PagingList
-          list={responesPhrases}
-          input={true}
-          handleUpdate={responesHandleUpdate}
-          inputPlaceHolder={"전송 문구를 입력해주세요"}
-        />
-      </div>
+      </Item>
+
+      <Item title="Response Phrases">
+        <textarea
+          className="text_area"
+          cols="30"
+          rows="10"
+          defaultValue={responesPhrases}
+        ></textarea>
+      </Item>
     </div>
   );
 };

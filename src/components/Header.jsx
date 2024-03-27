@@ -21,7 +21,7 @@ const HeaderWrap = styled.div`
   height: 40px;
   background-color: #eff2f8;
   position: relative;
-  padding: 15px 0 0 0;
+  padding: 25px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 

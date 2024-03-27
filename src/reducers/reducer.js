@@ -1,8 +1,8 @@
 // import { createSlice } from "@reduxjs/toolkit";
 import { createReducer } from "@reduxjs/toolkit";
-import { getIntentsCall } from "../api/api";
+import { getIntentsApi } from "../api/api";
 
-// const indentList = await getIntentsCall();
+// const indentList = await getIntentsApi();
 
 const initialState = {
   // indentList: indentList,

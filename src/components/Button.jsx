@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 // 스타일 컴포넌트를 사용하여 버튼 스타일링
 const ButtonStyled = styled.button`
-  padding: 10px 20px;
+  padding: 5px 12px;
   font-size: 16px;
   background-color: ${({ bgColor }) =>
     bgColor || "rgba(0,0,0,0.4)"}; /* props로 받은 배경색 또는 기본 색상 */

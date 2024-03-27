@@ -7,13 +7,32 @@ const api = axios.create({
   }
 });
 
-export const getIntentsCall = async () => {
-  // 인텐트 리스트 불러오기
+/**
+ * 인텐튼 전체 리스트 조회
+ * @returns
+ */
+export const getIntentsApi = async () => {
   const response = await api.post(`intent/all`, {});
   return response.data;
 };
 
-export const deletedIntendCall = async (id) => {
-  const response = await api.delete(`intent/${id}`);
+/**
+ * 인텐트 삭제 요청
+ * @param {String} indentId
+ * @returns
+ */
+export const deletedIntendApi = async (indentId) => {
+  const response = await api.delete(`intent/${indentId}`);
   return response;
+};
+
+/**
+ * 인텐트 상세 조회
+ * @param {String} indentId
+ * @returns
+ */
+export const getIntentInfoApi = async (indentId) => {
+  const param = { intentId: indentId };
+  const response = await api.post(`intent/find`, param);
+  return response.data;
 };

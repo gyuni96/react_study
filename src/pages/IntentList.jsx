@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "../components/Card";
 import { useNavigate } from "react-router-dom";
-import { deletedIntendCall, getIntentsCall } from "../api/api";
+import { deletedIntendApi, getIntentsApi } from "../api/api";
 import { alertConfirm, alertSuccess, alertError } from "../utils/alert";
 const IntentList = () => {
   const [intentList, setIntentList] = useState([]);
@@ -10,7 +10,7 @@ const IntentList = () => {
   // 페이지 진입시
   useEffect(() => {
     const setData = async () => {
-      const data = await getIntentsCall();
+      const data = await getIntentsApi();
       setIntentList(data);
     };
     setData();
@@ -34,7 +34,7 @@ const IntentList = () => {
           prevIntentList.filter((intent) => intent.intentId !== intentId)
         );
         //삭제 API call
-        deletedIntendCall(intentId)
+        deletedIntendApi(intentId)
           .then((res) => {
             if (res.data === "deleted successfully") {
               alertSuccess({
@@ -55,7 +55,7 @@ const IntentList = () => {
           return (
             <Card
               name={item.intentNm}
-              desc={item.desc}
+              desc={item.intentDesc}
               id={item.intentId}
               key={idx}
               clickHandler={clickHandler}
