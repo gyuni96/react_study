@@ -7,14 +7,33 @@
   grid-template-rows: repeat(3, 1fr);
 }
 
-.info_wrap {
-  padding: 15px 0;
+.card_add {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  width: 320px;
+  height: 200px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.15),
+    0 10px 10px rgba(0, 0, 0, 0.12);
+  transition: 0.3s ease;
+}
+.card_add:hover {
+  background-color: #2d2ddd;
+  color: #fff;
 }
 
-.info_title {
-  font-size: 2em;
-  margin-bottom: 20px;
-  font-weight: 400;
+.info_wrap {
+  padding: 15px 0;
+  padding-right: 30px;
+  height: 100%;
+}
+
+.flex {
+  display: flex;
 }
 
 .item_input {
@@ -24,6 +43,15 @@
   background-color: #fff;
   border-radius: 10px;
   outline: none;
+}
+
+.item_textarea {
+  padding: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  font-weight: 200;
+  outline: none;
+  width: 100%;
 }
 
 /* 페이징 css */
@@ -100,13 +128,4 @@
 }
 .paging_list_btn:hover {
   color: rgba(0, 0, 0, 0.8);
-}
-
-.text_area {
-  padding: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  font-weight: 200;
-  outline: none;
-  width: 100%;
 }

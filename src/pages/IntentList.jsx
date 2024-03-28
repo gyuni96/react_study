@@ -3,6 +3,9 @@ import Card from "../components/Card";
 import { useNavigate } from "react-router-dom";
 import { deletedIntendApi, getIntentsApi } from "../api/api";
 import { alertConfirm, alertSuccess, alertError } from "../utils/alert";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
+
 const IntentList = () => {
   const [intentList, setIntentList] = useState([]);
   const navigate = useNavigate();
@@ -51,6 +54,9 @@ const IntentList = () => {
   return (
     <>
       <div className="card_grid">
+        <div className="card_add" onClick={clickHandler} data-itemid="new">
+          <FontAwesomeIcon icon={faFolderPlus} size="5x" />
+        </div>
         {intentList.map((item, idx) => {
           return (
             <Card

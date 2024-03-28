@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const Card = ({ name, id, desc, clickHandler, deletHandler }) => {
   return (
@@ -10,7 +12,7 @@ const Card = ({ name, id, desc, clickHandler, deletHandler }) => {
           <ContentDescription>{desc}</ContentDescription>
         </ContentItem>
         <ContentDeletedButton onClick={deletHandler}>
-          <i className="fa-regular fa-trash-can"></i>
+          <FontAwesomeIcon icon={faTrash} size="lg" />
         </ContentDeletedButton>
       </CardWrap>
     </>
@@ -30,9 +32,9 @@ const CardWrap = styled.div`
   margin-bottom: 20px;
   padding-left: 30px;
   transition: 0.3s ease;
-  /* box-shadow:
+  box-shadow:
     0 14px 28px rgba(0, 0, 0, 0.15),
-    0 10px 10px rgba(0, 0, 0, 0.12); */
+    0 10px 10px rgba(0, 0, 0, 0.12);
   &:hover {
     background-color: #2d2ddd;
     color: #fff;

@@ -78,6 +78,9 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 300;
     box-sizing: border-box;
   }
+  ::-webkit-scrollbar {width: 10px}
+  ::-webkit-scrollbar-thumb {background-color: #b4b4b4; border-radius: 10px; background-clip: padding-box}
+  ::-webkit-scrollbar-track {background-color: #f1f1f1; border-radius: 10px; }
 `;
 
 export default GlobalStyle;

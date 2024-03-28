@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMessage, faSitemap } from "@fortawesome/free-solid-svg-icons";
 
 const SideMenu = () => {
   const navigate = useNavigate();
@@ -18,13 +20,10 @@ const SideMenu = () => {
       </LogoWrap>
       <Ul>
         <Li onClick={clickHandler}>
-          <i className="fa-solid fa-message"></i> INTENT
+          <FontAwesomeIcon icon={faMessage} size="sm" /> INTENT
         </Li>
         <Li onClick={clickHandler}>
-          <i className="fa-solid fa-sitemap"></i> ENTITY
-        </Li>
-        <Li onClick={clickHandler}>
-          <i className="fa-solid fa-lightbulb"></i> ITEMS
+          <FontAwesomeIcon icon={faSitemap} size="sm" /> ENTITY
         </Li>
       </Ul>
     </MenuWrap>
@@ -55,7 +54,8 @@ const Li = styled.li`
 
   transition: 0.1s ease;
   &:hover {
-    font-size: 1.5em;
+    color: #146ebe;
+    border-right: 2px solid #146ebe;
   }
 `;
 

@@ -33,7 +33,7 @@ const ContentWrap = styled.div`
   width: calc(100% - 240px);
   max-width: 1600px;
   padding: 0 35px;
-  overflow-y: scroll;
+  overflow-y: hidden;
 `;
 
 export default App;

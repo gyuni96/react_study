@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "react-js-pagination";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 const PagingList = ({
   list,
   listCnt,
+  postPage,
   input,
+  inputPlaceHolder,
+  paging,
   handleUpdate,
-  inputPlaceHolder
+  handleClick
 }) => {
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
-  const [postsPerPage, setPostsPerPage] = useState(4); // 페이지내 리스트 갯수
+  const [postsPerPage, setPostsPerPage] = useState(0); // 페이지내 리스트 갯수
+
+  useEffect(() => {
+    input === true ? setPostsPerPage(postPage - 1) : setPostsPerPage(postPage);
+  });
 
   const indexOfLast = currentPage * postsPerPage;
   const indexOfFirst = indexOfLast - postsPerPage;
@@ -45,31 +54,38 @@ const PagingList = ({
               placeholder={inputPlaceHolder}
             />
             <div className="paging_list_btn">
-              <i className="fa-solid fa-check"></i>
+              <FontAwesomeIcon icon={faCheck} size="lg" />
             </div>
           </li>
         ) : null}
         {currentPosts(list).map((item, idx) => (
-          <li className="paging_list" key={idx} data-seq={item.seq}>
+          <li
+            className="paging_list"
+            key={idx}
+            data-seq={item.seq}
+            onClick={handleClick}
+          >
             <p>{item.text}</p>
             <div className="paging_list_btn">
-              <i className="fa-solid fa-trash"></i>
+              <FontAwesomeIcon icon={faTrash} size="lg" />
             </div>
           </li>
         ))}
       </ul>
 
       {/* 페이징 영역 */}
-      <Pagination
-        activePage={currentPage}
-        itemsCountPerPage={postsPerPage} // 한 페이지랑 보여줄 아이템 갯수
-        totalItemsCount={listCnt} // 총 아이템 갯수
-        pageRangeDisplayed={5} // paginator의 페이지 범위
-        prevPageText={"‹"} // "이전"을 나타낼 텍스트
-        nextPageText={"›"} // "다음"을 나타낼 텍스트
-        itemClass="pagingation_item" // CSS 클래스명 설정
-        onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
-      />
+      {paging ? (
+        <Pagination
+          activePage={currentPage}
+          itemsCountPerPage={postsPerPage} // 한 페이지랑 보여줄 아이템 갯수
+          totalItemsCount={listCnt} // 총 아이템 갯수
+          pageRangeDisplayed={5} // paginator의 페이지 범위
+          prevPageText={"‹"} // "이전"을 나타낼 텍스트
+          nextPageText={"›"} // "다음"을 나타낼 텍스트
+          itemClass="pagingation_item" // CSS 클래스명 설정
+          onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
+        />
+      ) : null}
     </>
   );
 };

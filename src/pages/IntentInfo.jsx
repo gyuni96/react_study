@@ -2,58 +2,82 @@ import React, { useEffect, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react"; // AG Grid Component
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import PagingList from "../components/PagingList";
-import Button from "../components/Button";
 import { alertConfirm } from "../utils/alert";
 import Item from "../components/Item";
-import { getIntentInfoApi } from "../api/api";
+import { getIntentInfoApi, saveIntentInfoApi } from "../api/api";
 
 const IntentInfo = () => {
-  //const intent = useSelector((state) => state.intentReducer.selectedIndent);
-
-  const navigate = useNavigate();
-
   const { intentId } = useParams();
 
   const [intentName, setIntentName] = useState("");
   const [intentDesc, setIntentDesc] = useState("");
   const [trainingPhrases, setTrainingPhrase] = useState([]);
   const [rowData, setRowData] = useState([]);
-  const [entityEnum, setEntityEnum] = useState([]);
   const [responesPhrases, setResponesPhrases] = useState("");
 
-  //진입시 intent값이 null이면 메인페이지로 이동
+  // 페이지 진입시
   useEffect(() => {
-    intentId == null ? navigate("/") : null;
-
     const setData = async () => {
       const data = await getIntentInfoApi(intentId);
-
-      console.log(data);
 
       setIntentName(data.intentNm);
       setIntentDesc(data.intentDesc);
 
-      const intentExamples = JSON.parse(data.intentExamples);
-      setTrainingPhrase(intentExamples);
+      if (data.intentExamples !== undefined) {
+        const intentExamples = JSON.parse(data.intentExamples);
+        setTrainingPhrase(intentExamples);
+      }
 
-      const entityIds = JSON.parse(data.entityIds);
-      setRowData(entityIds);
+      if (data.entityIds !== undefined) {
+        const entityIds = JSON.parse(data.entityIds);
+        setRowData(entityIds);
 
-      // entity enum
-      const uniqueEntities = entityIds.reduce((acc, cur) => {
-        if (!acc.includes(cur.entityId)) {
-          acc.push(cur.entityId);
-        }
-        return acc;
-      }, []);
-      setEntityEnum(uniqueEntities);
+        // entity enum
+        const uniqueEntities = entityIds.reduce((acc, cur) => {
+          if (!acc.includes(cur.entityId)) {
+            acc.push(cur.entityId);
+          }
+          return acc;
+        }, []);
+
+        setColDefs((prevState) => {
+          const newState = [...prevState];
+          newState[0].cellEditorParams.values = uniqueEntities;
+          return newState;
+        });
+      }
 
       setResponesPhrases(data.answerPhrase);
     };
-    setData();
+
+    intentId !== "new" ? setData() : null;
   }, []);
+
+  // intentName 변경시 디바운싱
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      return setIntentName(intentName);
+    }, 300);
+    return () => clearTimeout(debounce);
+  }, [intentName]);
+
+  // intentDesc 변경시 디바운싱
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      return setIntentDesc(intentDesc);
+    }, 300);
+    return () => clearTimeout(debounce);
+  }, [intentDesc]);
+
+  // Response Phrases 변경시 디바운싱
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      return setResponesPhrases(responesPhrases);
+    }, 300);
+    return () => clearTimeout(debounce);
+  }, [responesPhrases]);
 
   const [colDefs, setColDefs] = useState([
     {
@@ -62,7 +86,7 @@ const IntentInfo = () => {
       width: 200,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: ["Name", "Service"]
+        values: []
       }
     },
     { field: "slotPrompt", headerName: "Prompt", flex: 1 }
@@ -74,22 +98,49 @@ const IntentInfo = () => {
     };
   }, []);
 
-  const traningHandleUpdate = (e) => {
-    const value = { text: e.target.value };
-    setTrainingPhrase([value, ...trainingPhrases]);
-    e.target.value = "";
-  };
-
   const handleSave = () => {
     alertConfirm({
       icon: "question",
       title: "저장",
-      text: "저장하시겠습니까?"
+      text: "저장하시겠습니까?",
+      callback: () => {
+        const param = {
+          intentId: intentId,
+          intentNm: intentName,
+          intentDesc: intentDesc,
+          intentExample: trainingPhrases,
+          answerPhrase: responesPhrases
+        };
+        saveIntentInfoApi(param);
+      }
     });
   };
 
+  const handleIntentNameUpdate = (e) => {
+    setIntentName(e.target.value);
+  };
+  const handleIntentDescUpdate = (e) => {
+    setIntentDesc(e.target.value);
+  };
+  const handleTraningUpdate = (e) => {
+    const value = { text: e.target.value, seq: trainingPhrases.length + 1 };
+    setTrainingPhrase([value, ...trainingPhrases]);
+    e.target.value = "";
+  };
+  const handleTraningClick = (e) => {
+    if (e.target.tagName !== "LI" && e.target.tagName !== "P") {
+      const seq = e.currentTarget.dataset.seq;
+
+      setTrainingPhrase((prevState) =>
+        prevState.filter((item) => item.seq != seq)
+      );
+    }
+  };
   const handleAddRow = () => {
     setRowData([{ entityId: "", slotPrompt: "" }, ...rowData]);
+  };
+  const handleResponesPhrasesUpdate = (e) => {
+    setResponesPhrases(e.target.value);
   };
 
   return (
@@ -103,6 +154,7 @@ const IntentInfo = () => {
           type="text"
           placeholder="인텐트명을 입력해주세요"
           defaultValue={intentName}
+          onChange={handleIntentNameUpdate}
         />
       </Item>
 
@@ -112,6 +164,7 @@ const IntentInfo = () => {
           type="text"
           placeholder="인텐트 설명을 입력해주세요"
           defaultValue={intentDesc}
+          onChange={handleIntentDescUpdate}
         />
       </Item>
 
@@ -119,9 +172,12 @@ const IntentInfo = () => {
         <PagingList
           list={trainingPhrases}
           listCnt={trainingPhrases.length}
+          postPage={5}
           input={true}
-          handleUpdate={traningHandleUpdate}
           inputPlaceHolder={"학습 문구를 등록해주세요"}
+          paging={true}
+          handleUpdate={handleTraningUpdate}
+          handleClick={handleTraningClick}
         />
       </Item>
 
@@ -129,9 +185,6 @@ const IntentInfo = () => {
         title="Required"
         buttonList={[{ buttonName: "행추가", onClick: handleAddRow }]}
       >
-        {/* <div className="info_button_Wrap">
-          <Button onClick={handleAddRow}>행추가</Button>
-        </div> */}
         <div className="ag-theme-quartz" style={{ height: 310 }}>
           <AgGridReact
             rowData={rowData}
@@ -146,10 +199,11 @@ const IntentInfo = () => {
 
       <Item title="Response Phrases">
         <textarea
-          className="text_area"
+          className="item_textarea"
           cols="30"
           rows="10"
           defaultValue={responesPhrases}
+          onChange={handleResponesPhrasesUpdate}
         ></textarea>
       </Item>
     </div>
