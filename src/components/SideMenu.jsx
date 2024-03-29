@@ -10,13 +10,15 @@ const SideMenu = () => {
   const clickHandler = (e) => {
     const menu = e.target.innerText.trim().toLowerCase();
 
-    menu === "intent" || menu === "logo" ? navigate(`/`) : navigate(`/${menu}`);
+    menu === "intent" || menu === "chatbot"
+      ? navigate(`/`)
+      : navigate(`/${menu}`);
   };
 
   return (
     <MenuWrap>
       <LogoWrap onClick={clickHandler}>
-        <p>LOGO</p>
+        <p>CHATBOT</p>
       </LogoWrap>
       <Ul>
         <Li onClick={clickHandler}>

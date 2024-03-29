@@ -1,7 +1,17 @@
 import React from "react";
 import styled from "styled-components";
 
+import { useLocation } from "react-router-dom";
+
 const Header = (props) => {
+  // const navigation = use
+
+  const path = useLocation();
+
+  console.log(path);
+
+  console.log(new URLSearchParams(path.search));
+
   return (
     <>
       <HeaderWrap>

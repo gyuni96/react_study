@@ -4,9 +4,12 @@ import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the 
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
 import { useParams } from "react-router-dom";
 import PagingList from "../components/PagingList";
-import { alertConfirm } from "../utils/alert";
+import { alertConfirm } from "../hooks/useAlert";
 import Item from "../components/Item";
 import { getIntentInfoApi, saveIntentInfoApi } from "../api/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import useModal from "../hooks/useModal";
 
 const IntentInfo = () => {
   const { intentId } = useParams();
@@ -89,7 +92,25 @@ const IntentInfo = () => {
         values: []
       }
     },
-    { field: "slotPrompt", headerName: "Prompt", flex: 1 }
+    {
+      field: "slotPrompt",
+      headerName: "Prompt",
+      flex: 1,
+      cellRenderer: (props) => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+          >
+            <p>{props.value}</p>
+            <FontAwesomeIcon onClick={test} icon={faEllipsisVertical} />
+          </div>
+        );
+      }
+    }
   ]);
 
   const defaultColDef = useMemo(() => {
@@ -141,6 +162,12 @@ const IntentInfo = () => {
   };
   const handleResponesPhrasesUpdate = (e) => {
     setResponesPhrases(e.target.value);
+  };
+
+  const { isOpen, openModal, closeModal, ModalContent } = useModal();
+
+  const test = () => {
+    openModal(<ModalContent content="새로운 내용" />);
   };
 
   return (
@@ -206,6 +233,13 @@ const IntentInfo = () => {
           onChange={handleResponesPhrasesUpdate}
         ></textarea>
       </Item>
+
+      {isOpen && (
+        <ModalContent>
+          {modalContent}
+          <button onClick={closeModal}>닫기</button>
+        </ModalContent>
+      )}
     </div>
   );
 };

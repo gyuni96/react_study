@@ -63,6 +63,7 @@ const PagingList = ({
             className="paging_list"
             key={idx}
             data-seq={item.seq}
+            data-id={item.id}
             onClick={handleClick}
           >
             <p>{item.text}</p>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Card from "../components/Card";
 import { useNavigate } from "react-router-dom";
 import { deletedIntendApi, getIntentsApi } from "../api/api";
-import { alertConfirm, alertSuccess, alertError } from "../utils/alert";
+import { alertConfirm, alertSuccess, alertError } from "../hooks/useAlert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 

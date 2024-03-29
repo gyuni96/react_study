@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import intentReducer from "./reducer";
+import reducer from "./reducer";
 
 const store = configureStore({
-  reducer: { intentReducer }
+  reducer: { reducer }
 });
 
 export default store;
