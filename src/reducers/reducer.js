@@ -1,29 +1,26 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { getIntentsApi } from "../api/api";
-
-// const indentList = await getIntentsApi();
 
 const initialState = {
-  selectMenu: ""
+  selectMenu: localStorage.getItem("navigation") || "INTENT",
+  isLogin: localStorage.getItem("user") !== null && true
 };
 
 const reducer = createReducer(initialState, (builder) => {
-  builder.addCase("SELECT_MENU", (state, action) => {
-    const menu = action.payload;
-    return { ...state, selectMenu: menu };
-  });
-  // builder.addCase("SELECT_INDENT", (state, action) => {
-  //   const indentId = action.payload;
-  //   return { ...state, selectedIndent: indentId };
-  // });
-  // builder.addCase("DELETE_INDENT", (state, action) => {
-  //   const indentId = action.payload;
-  //   console.log(indentId);
-  //   const updatedIndentList = state.indentList.filter(
-  //     (item) => item.intentId !== indentId
-  //   );
-  //   return { ...state, indentList: updatedIndentList };
-  // });
+  builder
+    .addCase("SELECT_MENU", (state, action) => {
+      const menu = action.payload;
+      localStorage.setItem("navigation", action.payload);
+      return { ...initialState, selectMenu: menu };
+    })
+    .addCase("LOGIN/fulfilled", (state, action) => {
+      console.log(action.payload);
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      return { ...initialState, isLogin: true };
+    })
+    .addCase("LOGOUT", (state) => {
+      localStorage.removeItem("user");
+      return { ...state, isLogin: false };
+    });
 });
 
 export default reducer;

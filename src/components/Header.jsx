@@ -1,23 +1,26 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+import { logout } from "../reducers/action";
 
-import { useLocation } from "react-router-dom";
-
-const Header = (props) => {
+const Header = () => {
   // const navigation = use
 
-  const path = useLocation();
+  const navigation = useSelector((state) => state.selectMenu);
 
-  console.log(path);
+  const userInfo = JSON.parse(localStorage.getItem("user"));
+  const dispatch = useDispatch();
 
-  console.log(new URLSearchParams(path.search));
-
+  const handlelogout = () => {
+    dispatch(logout());
+  };
   return (
     <>
       <HeaderWrap>
-        <Navigation>네비게이션</Navigation>
+        <Navigation>{navigation}</Navigation>
         <UserWrap>
-          <span>김남균</span>/<span>로그아웃</span>
+          <span>{userInfo.userName}</span>/
+          <span onClick={handlelogout}>로그아웃</span>
         </UserWrap>
       </HeaderWrap>
     </>

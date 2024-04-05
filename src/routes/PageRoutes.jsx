@@ -22,6 +22,5 @@ const PageRoutes = () => {
 export default PageRoutes;
 
 const RouteWrap = styled.div`
-  height: calc(100% - 40px);
-  overflow-y: auto;
+  height: calc(100% - 60px);
 `;

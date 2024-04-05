@@ -1,5 +1,4 @@
 import Swal from "sweetalert2";
-
 /**
  *
  * @param {icon} success , warning , error , question
@@ -12,6 +11,7 @@ export const alertConfirm = ({ icon, title, text, callback }) => {
     icon: icon,
     title: title,
     text: text,
+    iconPosition: "center",
     showCancelButton: true,
     confirmButtonText: "확인",
     cancelButtonText: "취소"
@@ -33,7 +33,17 @@ export const alertSuccess = ({ title, text }) => {
   Swal.fire({
     title: title,
     text: text,
-    icon: "success"
+    icon: "success",
+    iconPosition: "center"
+  });
+};
+
+export const alertWarning = ({ title, text }) => {
+  Swal.fire({
+    title: title,
+    text: text,
+    icon: "warning",
+    iconPosition: "center"
   });
 };
 
@@ -45,6 +55,7 @@ export const alertError = (errMsg) => {
   Swal.fire({
     title: "에러",
     html: `에러가 발생했습니다. <br/> Error Message : ${errMsg}`,
-    icon: "error"
+    icon: "error",
+    iconPosition: "center"
   });
 };

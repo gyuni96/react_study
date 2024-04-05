@@ -30,6 +30,7 @@
   padding: 15px 0;
   padding-right: 30px;
   height: 100%;
+  overflow-y: auto;
 }
 
 .flex {
@@ -38,7 +39,7 @@
 
 .item_input {
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 8px 15px;
   background-color: #fff;
   border-radius: 10px;
@@ -47,7 +48,7 @@
 
 .item_textarea {
   padding: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   font-weight: 200;
   outline: none;
@@ -55,6 +56,28 @@
   width: 100%;
 }
 
+.item_table_wrap {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.item_table {
+  width: 100%;
+  border-collapse: collapse;
+  border-style: hidden;
+  color: rgba(0, 0, 0, 0.8);
+}
+.item_table_head {
+  background-color: rgb(250 250 251);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+  text-align: left;
+}
+.item_table_td {
+  padding: 10px 20px;
+}
 /* 페이징 css */
 
 .paging_list_wrap {
@@ -129,4 +152,53 @@
 }
 .paging_list_btn:hover {
   color: rgba(0, 0, 0, 0.8);
+}
+
+.btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 5rem;
+}
+
+/* MODAL */
+
+.modal_container {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+.modal_title {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+}
+.modal_content {
+  border-radius: 10px;
+  background-color: #ffffff;
+  width: 680px;
+  padding: 30px;
+}
+.modal_btn_wrap {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.react-contextmenu {
+  z-index: 3;
+  position: absolute;
+}
+.contextItem {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  padding: 5px 8px;
+}
+.react-contextmenu-item:hover {
+  background-color: red;
 }

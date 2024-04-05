@@ -9,17 +9,27 @@ import { BrowserRouter } from "react-router-dom";
 
 import "./styles/index.css";
 
+import Login from "./pages/Login";
+import { useSelector } from "react-redux";
+
 function App() {
+  const login = useSelector((state) => state.isLogin);
+
   return (
     <BrowserRouter basename="/">
-      <Container>
-        <SideMenu />
-        <ContentWrap>
-          <Header />
-          <PageRoutes />
-        </ContentWrap>
-      </Container>
       <GlobalStyle />
+      <Container>
+        {!login && <Login />}
+        {login && (
+          <>
+            <SideMenu />
+            <ContentWrap>
+              <Header />
+              <PageRoutes />
+            </ContentWrap>
+          </>
+        )}
+      </Container>
     </BrowserRouter>
   );
 }

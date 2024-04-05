@@ -1,34 +1,94 @@
-import React from "react";
-import styled from "styled-components";
+import styled, { css, StyleSheetManager } from "styled-components";
 
-// 스타일 컴포넌트를 사용하여 버튼 스타일링
-const ButtonStyled = styled.button`
-  padding: 5px 12px;
-  font-size: 16px;
-  background-color: ${({ bgColor }) =>
-    bgColor || "rgba(0,0,0,0.4)"}; /* props로 받은 배경색 또는 기본 색상 */
-  color: ${({ color }) => color || "#fff"};
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+const SIZES = {
+  sm: css`
+    --button-font-size: 0.875rem;
+    --button-padding: 8px 12px;
+    --button-radius: 4px;
+  `,
+  md: css`
+    --button-font-size: 1rem;
+    --button-padding: 12px 16px;
+    --button-radius: 8px;
+  `,
+  lg: css`
+    --button-font-size: 1.25rem;
+    --button-padding: 16px 20px;
+    --button-radius: 12px;
+  `
+};
 
-  &:hover {
-    background-color: ${({ bgColor }) => bgColor || "#007bff"}; /* 호버 색상 */
-  }
+const VARIANTS = {
+  normal: css`
+    --button-color: #ffffff;
+    --button-bg-color: #7b7b7b;
+    --button-hover-bg-color: #717171;
+  `,
+  success: css`
+    --button-color: #ffffff;
+    --button-bg-color: #28a745;
+    --button-hover-bg-color: #218838;
+  `,
+  error: css`
+    --button-color: #ffffff;
+    --button-bg-color: #dc3545;
+    --button-hover-bg-color: #c82333;
+  `,
+  warning: css`
+    --button-color: #212529;
+    --button-bg-color: #ffc107;
+    --button-hover-bg-color: #e0a800;
+  `
+};
 
-  &:focus {
-    outline: none;
-  }
-`;
-
-// 공통으로 사용할 버튼 컴포넌트 정의
-const Button = ({ children, onClick, bgColor, color }) => {
+const Button = ({ disabled, size, variant, children, onClick }) => {
+  const sizeStyle = SIZES[size];
+  const variantStyle = VARIANTS[variant];
   return (
-    <ButtonStyled onClick={onClick} bgColor={bgColor} color={color}>
-      {children}
-    </ButtonStyled>
+    <StyleSheetManager shouldForwardProp={(prop) => prop !== "variantstyle"}>
+      <StyledButton
+        disabled={disabled}
+        sizestyle={sizeStyle}
+        variantstyle={variantStyle}
+        onClick={onClick}
+      >
+        {children}
+      </StyledButton>
+    </StyleSheetManager>
   );
 };
 
 export default Button;
+
+const StyledButton = styled.button`
+  ${(p) => p.sizestyle}
+  ${(p) => p.variantstyle}
+
+  
+  margin: 0;
+  border: none;
+  cursor: pointer;
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: var(--button-font-size, 1rem);
+  padding: var(--button-padding, 12px 16px);
+  border-radius: var(--button-radius, 8px);
+  background: var(--button-bg-color, #0d6efd);
+  color: var(--button-color, #ffffff);
+  margin-right: 10px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &:active,
+  &:hover,
+  &:focus {
+    background: var(--button-hover-bg-color, #025ce2);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+    background: var(--button-bg-color, #025ce2);
+  }
+`;

@@ -3,16 +3,20 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage, faSitemap } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { selectMenu } from "../reducers/action";
 
 const SideMenu = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const clickHandler = (e) => {
-    const menu = e.target.innerText.trim().toLowerCase();
+    let menu = e.target.innerText.trim().toLowerCase();
+    menu === "intent" || menu === "chatbot" ? (menu = "intent") : menu;
 
-    menu === "intent" || menu === "chatbot"
-      ? navigate(`/`)
-      : navigate(`/${menu}`);
+    // dispatch(selectMenu(menu.toUpperCase()));
+    dispatch(selectMenu(menu.toUpperCase()));
+    menu === "intent" ? navigate(`/`) : navigate(`/${menu}`);
   };
 
   return (
