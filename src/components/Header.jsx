@@ -17,29 +17,38 @@ const Header = () => {
   return (
     <>
       <HeaderWrap>
-        <Navigation>{navigation}</Navigation>
-        <UserWrap>
-          <span>{userInfo.userName}</span>/
-          <span onClick={handlelogout}>로그아웃</span>
-        </UserWrap>
+        <HeaderItem>
+          <Navigation>{navigation}</Navigation>
+          <UserWrap>
+            {/* <span>{userInfo.userName}</span> */}
+            <span>이름</span>
+            <span onClick={handlelogout}>로그아웃</span>
+          </UserWrap>
+        </HeaderItem>
       </HeaderWrap>
     </>
   );
 };
 
 const HeaderWrap = styled.div`
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  width: 100%;
+`;
+
+const HeaderItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 35px 0 35px 35px;
   height: 40px;
-  background-color: #eff2f8;
-  position: relative;
-  padding: 25px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  max-width: 1600px;
+
 `;
 
 const Navigation = styled.span`
-  font-size: 1.3em;
+  font-size: 1.7em;
+  font-weight: 800;
 `;
 
 const UserWrap = styled.div`

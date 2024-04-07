@@ -400,71 +400,73 @@ const IntentInfo = () => {
   return (
     <div className="info_wrap">
       <ContextMenu id={`contextMenu`} className="contextMenu">
-        <MenuItem className="contextItem" onClick={test2}>
-          삭제
-        </MenuItem>
-        <MenuItem className="contextItem" onClick={test}>
-          메시지 추가
-        </MenuItem>
-      </ContextMenu>
-      <Item
-        title="Intent Name"
-        buttonList={[{ buttonName: "저장", onClick: handleSave }]}
-      >
-        <input
-          className="item_input"
-          type="text"
-          placeholder="인텐트명을 입력해주세요"
-          defaultValue={intentName}
-          onChange={handleIntentNameUpdate}
-        />
-      </Item>
+          <MenuItem className="contextItem" onClick={test2}>
+            삭제
+          </MenuItem>
+          <MenuItem className="contextItem" onClick={test}>
+            메시지 추가
+          </MenuItem>
+        </ContextMenu>
+      <div className="item_wrap">
+        <Item
+          title="Intent Name"
+          buttonList={[{ buttonName: "저장", onClick: handleSave }]}
+        >
+          <input
+            className="item_input"
+            type="text"
+            placeholder="인텐트명을 입력해주세요"
+            defaultValue={intentName}
+            onChange={handleIntentNameUpdate}
+          />
+        </Item>
 
-      <Item title="Intent Description">
-        <input
-          className="item_input"
-          type="text"
-          placeholder="인텐트 설명을 입력해주세요"
-          defaultValue={intentDesc}
-          onChange={handleIntentDescUpdate}
-        />
-      </Item>
+        <Item title="Intent Description">
+          <input
+            className="item_input"
+            type="text"
+            placeholder="인텐트 설명을 입력해주세요"
+            defaultValue={intentDesc}
+            onChange={handleIntentDescUpdate}
+          />
+        </Item>
 
-      <Item title="Traning Phrases">
-        <PagingList
-          list={trainingPhrases}
-          input={true}
-          inputPlaceHolder={"학습 문구를 등록해주세요"}
-          postPage={5}
-          paging={true}
-          handleAdd={handleTraningAdd}
-          handleUpdate={handleTraingUpdate}
-          handleClickAdd={handleTraingAddClick}
-          handleClickDelete={handleTraingDeleteClick}
-        />
-      </Item>
+        <Item title="Traning Phrases">
+          <PagingList
+            list={trainingPhrases}
+            input={true}
+            inputPlaceHolder={"학습 문구를 등록해주세요"}
+            postPage={5}
+            paging={true}
+            handleAdd={handleTraningAdd}
+            handleUpdate={handleTraingUpdate}
+            handleClickAdd={handleTraingAddClick}
+            handleClickDelete={handleTraingDeleteClick}
+          />
+        </Item>
 
-      <Item
-        title="Required"
-        buttonList={[{ buttonName: "행추가", onClick: handleAddRow }]}
-      >
-        <PagingGrid
-          rowData={rowData}
-          columnDefs={colDefs}
-          gridHeigth={300}
-          postPage={5}
-        />
-      </Item>
+        <Item
+          title="Required"
+          buttonList={[{ buttonName: "행추가", onClick: handleAddRow }]}
+        >
+          <PagingGrid
+            rowData={rowData}
+            columnDefs={colDefs}
+            gridHeigth={300}
+            postPage={5}
+          />
+        </Item>
 
-      <Item title="Response Phrases">
-        <textarea
-          className="item_textarea"
-          cols="30"
-          rows="10"
-          defaultValue={responesPhrases}
-          onChange={handleResponesPhrasesUpdate}
-        ></textarea>
-      </Item>
+        <Item title="Response Phrases">
+          <textarea
+            className="item_textarea"
+            cols="30"
+            rows="10"
+            defaultValue={responesPhrases}
+            onChange={handleResponesPhrasesUpdate}
+          ></textarea>
+        </Item>
+      </div>
 
       <Modal
         isOpen={modalOpen}

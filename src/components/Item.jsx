@@ -33,6 +33,7 @@ const ItemWrap = styled.div`
 
 const ItemTitle = styled.h4`
   font-size: 1.3em;
+  color: #6a6e79;
 `;
 
 const TitleWrap = styled.div`

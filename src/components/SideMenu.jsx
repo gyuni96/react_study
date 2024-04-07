@@ -14,7 +14,6 @@ const SideMenu = () => {
     let menu = e.target.innerText.trim().toLowerCase();
     menu === "intent" || menu === "chatbot" ? (menu = "intent") : menu;
 
-    // dispatch(selectMenu(menu.toUpperCase()));
     dispatch(selectMenu(menu.toUpperCase()));
     menu === "intent" ? navigate(`/`) : navigate(`/${menu}`);
   };
@@ -25,23 +24,31 @@ const SideMenu = () => {
         <p>CHATBOT</p>
       </LogoWrap>
       <Ul>
-        <Li onClick={clickHandler}>
-          <FontAwesomeIcon icon={faMessage} size="sm" /> INTENT
-        </Li>
-        <Li onClick={clickHandler}>
-          <FontAwesomeIcon icon={faSitemap} size="sm" /> ENTITY
-        </Li>
+        <MenuList id="intent" className="active" onClick={clickHandler}>
+          <MenuItem>
+            <FontAwesomeIcon icon={faMessage} size="sm" />
+            <ListName>INTENT</ListName>
+          </MenuItem>
+        </MenuList>
+        <MenuList id="entity" onClick={clickHandler}>
+          <MenuItem>
+            <FontAwesomeIcon icon={faSitemap} size="sm" /> 
+            <ListName>ENTITY</ListName>
+          </MenuItem>
+          
+        </MenuList>
       </Ul>
     </MenuWrap>
   );
 };
 
 const MenuWrap = styled.div`
-  width: 240px;
+  width: 200px;
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  padding-left: 70px;
+  padding-left: 15px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const LogoWrap = styled.div`
@@ -51,18 +58,54 @@ const LogoWrap = styled.div`
   cursor: pointer;
 `;
 
-const Ul = styled.ul``;
+const Ul = styled.ul`
+  /* color: "#626b79";   */
+  color: "#3f4049";
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* 인터넷익스플로러 */
+  user-select: none;
+`;
 
-const Li = styled.li`
-  padding: 25px 0;
-  cursor: pointer;
-  font-size: 1.3em;
+const MenuItem = styled.div`
+  padding: 8px 10px;
+  /* background-color: red; */
+  border-radius: 10px;
 
-  transition: 0.1s ease;
   &:hover {
-    color: #146ebe;
-    border-right: 2px solid #146ebe;
+    background-color: #f2f5f9;
+  }
+  
+`;
+
+const MenuList = styled.li`
+  margin-bottom: 10px;
+  width: 100%;
+  padding-right: 15px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: 0.1s ease;
+
+  &:last-child{
+    margin-bottom: 0;
+  }
+
+  &.active {
+    border-right: 3px solid ${props=>props.theme.hoverColor};
+
+    ${MenuItem}{
+    background-color: ${props=>props.theme.lightColor};
+    color: ${props=>props.theme.hoverColor};
+  }
   }
 `;
+
+
+
+const ListName = styled.span`
+  margin-left: 10px;
+`;
+
+
 
 export default SideMenu;

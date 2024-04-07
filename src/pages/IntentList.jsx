@@ -5,16 +5,22 @@ import { deletedIntendApi, getIntentsApi } from "../api/api";
 import { alertConfirm, alertSuccess, alertError } from "../hooks/useAlert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
 
 const IntentList = () => {
-  const [intentList, setIntentList] = useState([]);
+  const [intentList, setIntentList] = useState([
+    {intentNm : 'aa', intentDesc : 'aa', intentId : '1'},
+    {intentNm : 'bb', intentDesc : 'bb', intentId : '2'},
+    // {intentNm : 'cc', intentDesc : 'cc', intentId : '3'},
+    // {intentNm : 'dd', intentDesc : 'dd', intentId : '4'},
+  ]);
   const navigate = useNavigate();
 
   // 페이지 진입시
   useEffect(() => {
     const setData = async () => {
-      const data = await getIntentsApi();
-      setIntentList(data);
+      // const data = await getIntentsApi();
+      // setIntentList(data);
     };
     setData();
   }, []);
@@ -54,9 +60,12 @@ const IntentList = () => {
   return (
     <>
       <div className="card_grid">
-        <div className="card_add" onClick={clickHandler} data-itemid="new">
-          <FontAwesomeIcon icon={faFolderPlus} size="5x" />
-        </div>
+        <AddCard>
+          <FontAwesomeIcon icon={faFolderPlus} size="4x" />
+        </AddCard>
+        {/* <div className="card_add" onClick={clickHandler} data-itemid="new">
+          
+        </div> */}
         {intentList.map((item, idx) => {
           return (
             <Card
@@ -75,3 +84,25 @@ const IntentList = () => {
 };
 
 export default IntentList;
+
+
+const AddCard = styled.div`
+  position: relative;
+  background-color: ${props=> props.theme.themeColor};
+  color: ${props=> props.theme.hoverColor};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 220px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  transition: 0.3s ease;
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.15),
+    0 10px 10px rgba(0, 0, 0, 0.12);
+  &:hover {
+    background-color: ${(props)=>props.theme.hoverColor};
+    color: #fff;
+  }
+`

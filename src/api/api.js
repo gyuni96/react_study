@@ -58,12 +58,11 @@ api.interceptors.response.use(
   (error) => {
     //response 에러
     console.log(error);
-    alertError("로그인이 필요합니다.");
 
     if (error.response.status === 401) {
       //권한 없음
       // localStorage.removeItem("user");
-      alertError("로그인이 필요합니다.");
+      // alertError("로그인이 필요합니다.");
       // location.reload();
     }
     console.log("에러발생!");

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import GlobalStyle from "./components/GlobalStyle";
+import GlobalStyle from "./styles/GlobalStyle";
 import Header from "./components/Header";
 import SideMenu from "./components/SideMenu";
 
@@ -13,7 +13,9 @@ import Login from "./pages/Login";
 import { useSelector } from "react-redux";
 
 function App() {
-  const login = useSelector((state) => state.isLogin);
+  // const login = useSelector((state) => state.isLogin);
+  const login = true;
+
 
   return (
     <BrowserRouter basename="/">
@@ -36,13 +38,12 @@ function App() {
 
 const Container = styled.div`
   display: flex;
-  background-color: #eff2f8;
+  /* background-color: #eff2f8; */
+  background-color: #f5f4f6;
   height: 100vh;
 `;
 const ContentWrap = styled.div`
-  width: calc(100% - 240px);
-  max-width: 1600px;
-  padding: 0 35px;
+  width: calc(100% - 200px);
   overflow-y: hidden;
 `;
 

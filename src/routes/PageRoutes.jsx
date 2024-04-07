@@ -22,5 +22,7 @@ const PageRoutes = () => {
 export default PageRoutes;
 
 const RouteWrap = styled.div`
+  padding: 10px 35px 0;
   height: calc(100% - 60px);
+  max-width: 1600px;
 `;
