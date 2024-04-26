@@ -10,7 +10,7 @@ const GlobalStyle = createGlobalStyle`
 }
 
 /* 기본 폰트 설정 */
-body {
+html {
   font-family: sans-serif;
   /* color: #2a313f; */
   color: #1f2839;
@@ -55,6 +55,11 @@ input, textarea, select {
   border: 1px solid #ccc;
   padding: 5px;
   font-size: 16px;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* 버튼 스타일 설정 */

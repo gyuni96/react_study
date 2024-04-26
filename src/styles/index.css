@@ -1,10 +1,15 @@
+.mb-10 {
+  margin-bottom: 10px;
+}
+
 .card_grid {
-  padding: 30px 0;
-  /* background-color: #eff2f8; */
+  padding: 1rem 0;
+  height: 100%;
+  overflow-y: auto;
   display: grid;
   justify-items: center;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
 }
 
 .card_add {
@@ -35,13 +40,18 @@
   display: flex;
 }
 
-.item_wrap{
+.item_wrap {
   background-color: #fff;
-  padding: 20px;
-  border-radius: 30px;
-  overflow-y: auto;
+  padding: 25px 20px;
+  border-radius: 10px;
+  overflow-y: hidden;
   height: 100%;
+}
 
+.item {
+  overflow: auto;
+  height: 100%;
+  padding-right: 15px;
 }
 
 .item_input {
@@ -109,11 +119,11 @@
   border: none;
   outline: none;
   width: 100%;
-  font-size: 1em;
+  font-size: 1rem;
   padding: 0;
 }
 .paging_list_input::placeholder {
-  font-size: 1em;
+  font-size: 1rem;
 }
 
 .pagination {
@@ -135,14 +145,14 @@
   margin-right: 0px;
 }
 .pagingation_item.active {
-  border: 1px solid blue;
+  border: 1px solid rgba(0, 0, 0, 0.8);
   border-radius: 10px;
 }
 .pagingation_item.active a {
-  color: blue;
+  color: rgba(0, 0, 0, 0.8);
 }
 .pagingation_item a {
-  font-size: 0.9em;
+  font-size: 0.9rem;
   color: rgba(0, 0, 0, 0.5);
   text-decoration: none;
   outline: none;
@@ -166,36 +176,6 @@
   margin-top: 5rem;
 }
 
-/* MODAL */
-
-.modal_container {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2;
-}
-.modal_title {
-  font-size: 1.5em;
-  margin-bottom: 15px;
-}
-.modal_content {
-  border-radius: 10px;
-  background-color: #ffffff;
-  width: 680px;
-  padding: 30px;
-}
-.modal_btn_wrap {
-  margin-top: 15px;
-  display: flex;
-  justify-content: center;
-}
-
 .react-contextmenu {
   z-index: 3;
   position: absolute;
@@ -206,5 +186,149 @@
   padding: 5px 8px;
 }
 .react-contextmenu-item:hover {
-  background-color: red;
+  background-color: #7b7b7b;
+  color: #fff;
+}
+
+.loader:before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: -20px;
+  height: 9px;
+  width: 9px;
+  border-radius: 12px;
+  -webkit-animation: loaderg 3s ease-in-out infinite;
+  animation: loaderg 3s ease-in-out infinite;
+}
+.loaderWrap {
+  width: 85px;
+}
+.loader {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  margin-left: 20px;
+  /* top: 46%;
+  left: 46%; */
+  border-radius: 12px;
+  -webkit-animation: loaderm 3s ease-in-out infinite;
+  animation: loaderm 3s ease-in-out infinite;
+}
+
+.loader:after {
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: 20px;
+  height: 9px;
+  width: 9px;
+  border-radius: 10px;
+  -webkit-animation: loaderd 3s ease-in-out infinite;
+  animation: loaderd 3s ease-in-out infinite;
+}
+
+@-webkit-keyframes loaderg {
+  0% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  25% {
+    background-color: #1f6cd5;
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  75% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+@keyframes loaderg {
+  0% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  25% {
+    background-color: #1f6cd5;
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  75% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@-webkit-keyframes loaderm {
+  0% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  25% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    background-color: #1f6cd5;
+  }
+  75% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+@keyframes loaderm {
+  0% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  25% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    background-color: #1f6cd5;
+  }
+  75% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@-webkit-keyframes loaderd {
+  0% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  25% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  75% {
+    background-color: #1f6cd5;
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+@keyframes loaderd {
+  0% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  25% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  75% {
+    background-color: #1f6cd5;
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
 }

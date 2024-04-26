@@ -11,7 +11,6 @@ export const alertConfirm = ({ icon, title, text, callback }) => {
     icon: icon,
     title: title,
     text: text,
-    iconPosition: "center",
     showCancelButton: true,
     confirmButtonText: "확인",
     cancelButtonText: "취소"
@@ -29,12 +28,19 @@ export const alertConfirm = ({ icon, title, text, callback }) => {
  * @param {title} 제목
  * @param {text} 내용
  */
-export const alertSuccess = ({ title, text }) => {
+export const alertSuccess = ({ title, text, callback }) => {
   Swal.fire({
     title: title,
     text: text,
-    icon: "success",
-    iconPosition: "center"
+    icon: "success"
+  }).then((res) => {
+    if (res.isConfirmed) {
+      if(callback){
+        callback();
+      } else {
+        return;
+      } 
+    }
   });
 };
 
@@ -42,8 +48,7 @@ export const alertWarning = ({ title, text }) => {
   Swal.fire({
     title: title,
     text: text,
-    icon: "warning",
-    iconPosition: "center"
+    icon: "warning"
   });
 };
 
@@ -51,11 +56,16 @@ export const alertWarning = ({ title, text }) => {
  * ERROR Alert
  * @param {errMsg} 에러메시지
  */
-export const alertError = (errMsg) => {
+export const alertError = (errMsg, code, callback) => {
   Swal.fire({
     title: "에러",
-    html: `에러가 발생했습니다. <br/> Error Message : ${errMsg}`,
+    html: `${errMsg}. <br/> Error Code : ${code}`,
     icon: "error",
-    iconPosition: "center"
+    confirmButtonText: "확인"
+  }).then((res) => {
+    if (res.isConfirmed) {
+      if (typeof callback !== "function") return;
+      callback();
+    }
   });
 };

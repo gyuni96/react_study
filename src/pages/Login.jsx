@@ -2,98 +2,131 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import Button from "../components/Button";
-import { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { LOGIN, login } from "../reducers/action";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../reducers/action";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { emailRegex, passwordRegex } from "../utils/regex";
+import FormInput from "../components/FormInput";
+
 const Login = () => {
-  const [loginKeep, setLoginKeep] = useState(false);
+  const { register, handleSubmit, setFocus, formState } = useForm({
+    mode: "onBlur"
+  });
 
-  // const handleCheck = () => {
-  //   setLoginKeep((prevLoginKeep) => !prevLoginKeep);
-  // };
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userId = useRef();
-  const userPwd = useRef();
 
-  const handleChange = (e, type) => {
-    const value = e.target.value;
+  // page 진입시
+  useEffect(() => {
+    setFocus("userId");
+  }, []);
 
-    type.current = value;
+  const handleSignup = async () => {
+    navigate(`/signup`);
+  };
+  const handleFindId = async () => {
+    navigate(`/findUserId`);
+  };
+  const handleFindPwd = async () => {
+    navigate(`/findUserPwd`);
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    const param = {
-      userId: userId.current,
-      userPwd: userPwd.current
-    };
-
-    dispatch(login(param));
+  const onSubmit = (data) => {
+    console.log("data", data);
+    dispatch(login(data));
   };
 
   return (
     <LoginWrap>
-      <LoginForm>
+      <Button
+        type="submit"
+        sizeStyle="lg"
+        onClick={() => {
+          dispatch(login({ userId: "test3", userPwd: "1" }));
+        }}
+      >
+        로그인
+      </Button>
+
+      <LoginBox>
         <h1>CHATBOT</h1>
-        <IdPwWrap>
-          <IdPwItem>
-            <FontAwesomeIcon
-              icon={faUser}
-              size="sm"
-              color="rgba(0,0,0,0.5)"
-              style={{ marginRight: "5px" }}
-            />
-            <IdPwInput
-              onChange={(e) => handleChange(e, userId)}
-              type="text"
-              placeholder="아이디"
-            />
-          </IdPwItem>
-          <IdPwItem>
-            <FontAwesomeIcon
-              icon={faLock}
-              size="sm"
-              color="rgba(0,0,0,0.5)"
-              style={{ marginRight: "5px" }}
-            />
-            <IdPwInput
-              onChange={(e) => handleChange(e, userPwd)}
-              type="text"
-              placeholder="비밀번호"
-            />
-          </IdPwItem>
-        </IdPwWrap>
-        <KeepWrap>
-          <KeepCheck
-            type="checkbox"
-            name=""
-            id="login-keep"
-            // checked={loginKeep}
-            // onChange={handleCheck}
+        <form
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            marginBottom: "12px"
+          }}
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <FormInput
+            icon={
+              <FontAwesomeIcon
+                icon={faUser}
+                size="sm"
+                color="rgba(0,0,0,0.5)"
+                style={{ marginRight: "5px" }}
+              />
+            }
+            erroMsg={formState.errors["userId"]?.message}
+            inputProps={{
+              placeholder: "아이디",
+              type: "text",
+              ...register("userId", {
+                pattern: {
+                  value: emailRegex.regex,
+                  message: emailRegex.message
+                },
+                required: {
+                  value: true,
+                  message: "아이디를 입력해주세요."
+                }
+              })
+            }}
           />
-          <KeepLabel htmlFor="login-keep">로그인 상태 유지</KeepLabel>
-        </KeepWrap>
-        {/* <p>존재하지 않는 아이디 입니다.</p> */}
-        <Button sizeStyle="lg" onClick={handleLogin}>
-          로그인
-        </Button>
-      </LoginForm>
+          <FormInput
+            icon={
+              <FontAwesomeIcon
+                icon={faLock}
+                size="sm"
+                color="rgba(0,0,0,0.5)"
+                style={{ marginRight: "5px" }}
+              />
+            }
+            erroMsg={formState.errors["userPwd"]?.message}
+            inputProps={{
+              placeholder: "비밀번호",
+              type: "text",
+              ...register("userPwd", {
+                pattern: {
+                  value: passwordRegex.regex,
+                  message: passwordRegex.message
+                },
+                required: {
+                  value: true,
+                  message: "비밀번호를 입력해주세요."
+                }
+              })
+            }}
+          />
+          <Button type="submit" sizeStyle="lg">
+            로그인
+          </Button>
+        </form>
+        <ButtonWrap>
+          <SingupBtn onClick={handleSignup}>회원가입</SingupBtn>
+          <FindIdBtn onClick={handleFindId}>아이디 찾기</FindIdBtn>
+          <FindPwdBtn onClick={handleFindPwd}>비밀번호 찾기</FindPwdBtn>
+        </ButtonWrap>
+      </LoginBox>
     </LoginWrap>
   );
 };
 
 export default Login;
 
-const LoginWrap = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: center;
-`;
-
-const LoginForm = styled.form`
+const LoginBox = styled.div`
   background-color: #fff;
   width: 600px;
   height: 400px;
@@ -104,41 +137,27 @@ const LoginForm = styled.form`
   padding: 0 35px;
 `;
 
-const IdPwWrap = styled.div`
-  /* padding: 0 20px; */
+const LoginWrap = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  height: 100%;
 `;
-
-const IdPwItem = styled.div`
-  padding: 16px 18px;
-  background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: none;
-  &:first-child {
-    border-radius: 12px 12px 0 0;
-  }
-  &:last-child {
-    border-radius: 0 0 12px 12px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-  }
+const ButtonWrap = styled.div`
+  display: flex;
+  color: #0077ff;
+  margin-top: 10px;
 `;
-
-const IdPwInput = styled.input`
-  border: none;
-  outline: none;
+const SingupBtn = styled.span`
+  cursor: pointer;
 `;
-const KeepWrap = styled.div`
-  margin-bottom: 20px;
+const FindIdBtn = styled.span`
+  cursor: pointer;
+  margin-left: auto;
+  padding-right: 5px;
 `;
-const KeepCheck = styled.input``;
-const KeepLabel = styled.label`
-  color: rgba(0, 0, 0, 0.5);
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-`;
-
-const loginValidText = styled.p`
-  color: #ff003e;
+const FindPwdBtn = styled.span`
+  cursor: pointer;
+  padding-left: 5px;
 `;

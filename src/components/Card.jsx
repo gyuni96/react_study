@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faFileLines } from "@fortawesome/free-solid-svg-icons";
-import { height, width } from "@fortawesome/free-brands-svg-icons/fa42Group";
 
 const Card = ({ name, id, desc, clickHandler, deletHandler }) => {
   return (
@@ -10,20 +9,20 @@ const Card = ({ name, id, desc, clickHandler, deletHandler }) => {
       <CardWrap>
         <ContentItem onClick={clickHandler} data-itemid={id}>
           <ContentIcon>
-            <FontAwesomeIcon icon={faFileLines} size="lg"/>
+            <FontAwesomeIcon icon={faFileLines} size="lg" />
           </ContentIcon>
           <ContentTitle>{name}</ContentTitle>
           <ContentDescription>{desc}</ContentDescription>
         </ContentItem>
-        <ContentDeletedButton onClick={deletHandler}>
-          <FontAwesomeIcon icon={faTrash} size="lg" />
-        </ContentDeletedButton>
+        {deletHandler && (
+          <ContentDeletedButton onClick={deletHandler}>
+            <FontAwesomeIcon icon={faTrash} size="lg" />
+          </ContentDeletedButton>
+        )}
       </CardWrap>
     </>
   );
 };
-
-
 
 const ContentItem = styled.div`
   cursor: pointer;
@@ -48,25 +47,31 @@ const ContentIcon = styled.div`
   justify-content: center;
   color: ${(props) => props.theme.hoverColor};
   margin-bottom: 10px;
-
-`
+  transition: 0.3s ease;
+`;
 const ContentTitle = styled.span`
-  font-size: 2em;
+  white-space: nowrap;
+  font-size: 1.8rem;
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 100%;
   font-weight: 500;
   margin-bottom: 5px;
 `;
 
 const ContentDescription = styled.span`
-  font-size: 0.8em;
+  font-size: 0.8rem;
 `;
 const ContentDeletedButton = styled.div`
   position: absolute;
   bottom: 20px;
   right: 15px;
   cursor: pointer;
-  color: #c2dbfe;
+  color: ${(props) => props.theme.hoverColor};
+  /* color: #5c5c5c; */
+  transition: 0.3s ease;
 `;
-
 
 const CardWrap = styled.div`
   position: relative;
@@ -75,21 +80,33 @@ const CardWrap = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 300px;
-  height: 220px;
+  width: 280px;
+  height: 170px;
   border-radius: 10px;
-  margin-bottom: 20px;
-  padding-left: 30px;
+  margin-bottom: 45px;
+  padding: 0 30px;
   transition: 0.3s ease;
   box-shadow:
     0 14px 28px rgba(0, 0, 0, 0.15),
     0 10px 10px rgba(0, 0, 0, 0.12);
   &:hover {
-    background-color: ${(props)=>props.theme.hoverColor};
+    background-color: ${(props) => props.theme.hoverColor};
     color: #fff;
 
-    ${ContentDeletedButton}{
+    ${ContentDeletedButton} {
       color: #fff;
+    }
+  }
+  &:nth-child(odd) {
+    background-color: ${(props) => props.theme.themeColor};
+
+    &:hover {
+      background-color: ${(props) => props.theme.hoverColor};
+      color: #fff;
+
+      ${ContentDeletedButton} {
+        color: #fff;
+      }
     }
   }
 `;

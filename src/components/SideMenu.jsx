@@ -1,21 +1,69 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMessage, faSitemap } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
-import { selectMenu } from "../reducers/action";
+import { useDispatch, useSelector } from "react-redux";
+import { selectMenu as activeMenu } from "../reducers/action";
+import TreeNode from "./TreeNode";
+import { menuApi } from "../api/api";
 
 const SideMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { selectMenu, theme, isLogin } = useSelector((state) => state);
+  const [menuList, setMenuList] = useState([]);
+
+  useEffect(() => {
+    const menuLi = document.querySelectorAll(".menu_list li");
+
+    menuLi.forEach((menu) => {
+      menu.classList.remove("active");
+      if (menu.textContent.toLowerCase() === selectMenu.toLowerCase()) {
+        menu.parentElement.classList.add("active");
+        menu.classList.add("active");
+      }
+    });
+  }, [selectMenu, theme, menuList]);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      const userInfo = JSON.parse(localStorage.getItem("user"));
+
+      const param = {
+        userId: userInfo.userId,
+        authCd: userInfo.authCd
+      };
+      const respone = await menuApi(param);
+      isLogin && setMenuList(convertToTree(respone));
+    };
+
+    fetchMenu();
+  }, []);
+
+  const convertToTree = (data) => {
+    const map = {}; // 각 노드의 ID를 키로 사용하여 빠르게 접근하기 위한 맵
+    const tree = []; // 최상위 노드들을 담을 배열
+
+    // 데이터를 맵에 저장
+    data.forEach((node) => {
+      map[node.menuId] = { ...node, children: [] };
+    });
+
+    // 데이터를 순회하면서 부모 노드에 자식 노드를 연결
+    data.forEach((node) => {
+      if (node.parentMenuId !== null && map[node.parentMenuId]) {
+        map[node.parentMenuId].children.push(map[node.menuId]);
+      } else {
+        // 최상위 노드일 경우 트리에 추가
+        tree.push(map[node.menuId]);
+      }
+    });
+
+    return tree;
+  };
 
   const clickHandler = (e) => {
-    let menu = e.target.innerText.trim().toLowerCase();
-    menu === "intent" || menu === "chatbot" ? (menu = "intent") : menu;
-
-    dispatch(selectMenu(menu.toUpperCase()));
-    menu === "intent" ? navigate(`/`) : navigate(`/${menu}`);
+    dispatch(activeMenu("INTENT"));
+    navigate(`/intent`);
   };
 
   return (
@@ -23,20 +71,11 @@ const SideMenu = () => {
       <LogoWrap onClick={clickHandler}>
         <p>CHATBOT</p>
       </LogoWrap>
-      <Ul>
-        <MenuList id="intent" className="active" onClick={clickHandler}>
-          <MenuItem>
-            <FontAwesomeIcon icon={faMessage} size="sm" />
-            <ListName>INTENT</ListName>
-          </MenuItem>
-        </MenuList>
-        <MenuList id="entity" onClick={clickHandler}>
-          <MenuItem>
-            <FontAwesomeIcon icon={faSitemap} size="sm" /> 
-            <ListName>ENTITY</ListName>
-          </MenuItem>
-          
-        </MenuList>
+
+      <Ul className="menu_list">
+        {menuList.map((node, index) => (
+          <TreeNode key={index} node={node} />
+        ))}
       </Ul>
     </MenuWrap>
   );
@@ -69,13 +108,12 @@ const Ul = styled.ul`
 
 const MenuItem = styled.div`
   padding: 8px 10px;
-  /* background-color: red; */
   border-radius: 10px;
+  transition: 0.3s ease;
 
   &:hover {
     background-color: #f2f5f9;
   }
-  
 `;
 
 const MenuList = styled.li`
@@ -83,29 +121,25 @@ const MenuList = styled.li`
   width: 100%;
   padding-right: 15px;
   cursor: pointer;
-  font-size: 1.1em;
+  font-size: 1.1rem;
   transition: 0.1s ease;
 
-  &:last-child{
+  &:last-child {
     margin-bottom: 0;
   }
 
   &.active {
-    border-right: 3px solid ${props=>props.theme.hoverColor};
+    border-right: 3px solid ${(props) => props.theme.hoverColor};
 
-    ${MenuItem}{
-    background-color: ${props=>props.theme.lightColor};
-    color: ${props=>props.theme.hoverColor};
-  }
+    ${MenuItem} {
+      background-color: ${(props) => props.theme.themeColor};
+      color: ${(props) => props.theme.hoverColor};
+    }
   }
 `;
-
-
 
 const ListName = styled.span`
   margin-left: 10px;
 `;
-
-
 
 export default SideMenu;

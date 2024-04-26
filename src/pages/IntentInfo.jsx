@@ -7,7 +7,8 @@ import {
   getIntentInfoApi,
   saveIntentInfoApi,
   getEntityApi,
-  getEntitySlotPromptApi
+  getEntitySlotPromptApi,
+  savePropmptApi
 } from "../api/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisVertical, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -16,8 +17,13 @@ import Modal from "../components/Modal";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
-
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import _ from "lodash";
+// import {
+//   ContextMenu,
+//   MenuItem,
+//   ContextMenuTrigger,
+//   hideMenu
+// } from "react-contextmenu";
 
 import Select from "react-select";
 
@@ -36,13 +42,34 @@ const IntentInfo = () => {
   const [deleteSlotPrompt, setDeleteSlotPrompt] = useState([]);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const modalBackground = useRef();
+  const modalBackground = useRef("");
   const selectRow = useRef({});
   const [entityEnum, setEntityEnum] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
 
   // 렌더링 확인용
-  useEffect(() => console.log("render"));
+  // useEffect(() => console.log("render"));
+
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = _.throttle(() => {
+      if (menuVisible) {
+        setMenuVisible(false); // 스크롤 시 메뉴 숨기기
+        hideMenu();
+      }
+      console.log("실행");
+    }, 100);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [menuVisible]); // menuVisible 상태에 따라 effect 재실행
+
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
 
   // 페이지 진입시
   useEffect(() => {
@@ -50,13 +77,13 @@ const IntentInfo = () => {
       const data = await getIntentInfoApi(intentId);
 
       const newData = {
-        intentName: data.intentNm,
-        intentDesc: data.intentDesc,
+        intentName: data.intentNm ?? "",
+        intentDesc: data.intentDesc ?? "",
         trainingPhrase: data.intentExamples
           ? JSON.parse(data.intentExamples)
           : [],
         rowData: data.entityIds ? JSON.parse(data.entityIds) : [],
-        responesPhrases: data.answerPhrase
+        responesPhrases: data.answerPhrase ?? ""
       };
 
       const entityData = await getEntityApi();
@@ -70,14 +97,13 @@ const IntentInfo = () => {
       setTrainingPhrase(newData.trainingPhrase);
       setRowData(newData.rowData);
       setResponesPhrases(newData.responesPhrases);
-
       setEntityEnum(entityEnum);
     };
 
     if (intentId !== "new") {
       fetchData();
     }
-  }, []);
+  }, [intentId]);
 
   // 컬럼 속성
   const [colDefs, setColDefs] = useState([
@@ -85,11 +111,7 @@ const IntentInfo = () => {
       field: "entityId",
       headerName: "Entity",
       width: 200,
-      editable: true,
-      cellEditor: "agSelectCellEditor",
-      cellEditorParams: {
-        values: []
-      }
+      editable: false
     },
     {
       field: "slotPrompt",
@@ -109,7 +131,7 @@ const IntentInfo = () => {
               {props.value} {props.data.cnt && `(${props.data.cnt})`}
             </p>
 
-            <ContextMenuTrigger id={`contextMenu`} mouseButton={0}>
+            {/* <ContextMenuTrigger id={`contextMenu`} mouseButton={0}>
               <div
                 style={{
                   padding: "5px 10px",
@@ -118,13 +140,14 @@ const IntentInfo = () => {
                 onClick={() => {
                   selectRow.current = {
                     entityId: props.data.entityId,
-                    cnt: props.data.cnt
+                    cnt: props.data.cnt,
+                    slotSeq: props.data.slotSeq
                   };
                 }}
               >
                 <FontAwesomeIcon icon={faEllipsisVertical} />
               </div>
-            </ContextMenuTrigger>
+            </ContextMenuTrigger> */}
           </div>
         );
       }
@@ -172,25 +195,21 @@ const IntentInfo = () => {
       title: "저장",
       text: "저장하시겠습니까?",
       callback: async () => {
-        const set = new Set(rowData.map((item) => item.entityId));
-        const uniqueSlotMappingEntityId = [...set].map((item) => ({
-          entityId: item
-        }));
-
         const param = {
           intentId: intentId,
           intentNm: intentName,
           intentDesc: intentDesc,
           intentExample: trainingPhrases,
-          slotMapping: uniqueSlotMappingEntityId,
-          slotPrompt: rowData,
           answerPhrase: responesPhrases,
           deleteTrainingPhrases: deleteTrainingPhrases,
           deleteSlot: deleteSlot
         };
 
-        console.log(param);
         const respone = await saveIntentInfoApi(param);
+
+        setDeleteSlot([]);
+        setDeleteTrainingPhrases([]);
+        setSelectedOption(null);
         navigate(`/intent/${respone}`);
       }
     });
@@ -198,6 +217,7 @@ const IntentInfo = () => {
 
   // 인텐트 제목 수정
   const handleIntentNameUpdate = (e) => {
+    e.persist(); // 이벤트 객체 해제 방지
     let value = e.target.value.toLowerCase();
     setTimeout(() => {
       if (value === e.target.value.toLowerCase()) {
@@ -208,6 +228,7 @@ const IntentInfo = () => {
 
   // 인텐트 설명 수정
   const handleIntentDescUpdate = (e) => {
+    e.persist();
     let value = e.target.value.toLowerCase();
     setTimeout(() => {
       if (value === e.target.value.toLowerCase()) {
@@ -216,87 +237,9 @@ const IntentInfo = () => {
     }, 400);
   };
 
-  // 리스트 추가
-  const handleTraningAdd = (e) => {
-    if (e.target !== e.currentTarget) return;
-    e.stopPropagation();
-
-    if (e.key !== "Enter" || e.target.value === "") return;
-
-    const value = { text: e.target.value, seq: null };
-    setTrainingPhrase([value, ...trainingPhrases]);
-
-    e.target.value = "";
-  };
-
-  // 리스트 수정
-  const handleTraingUpdate = (e, index) => {
-    const seq = e.currentTarget.dataset.seq;
-    const value = e.currentTarget.value;
-    const updateTrainingPhrase = [...trainingPhrases];
-
-    if (seq == undefined) {
-      updateTrainingPhrase[index].text = value;
-    } else {
-      updateTrainingPhrase.filter((item) =>
-        item.seq == seq ? (item.text = value) : null
-      );
-    }
-    setTrainingPhrase(updateTrainingPhrase);
-  };
-
-  // 리스트 클릭시 추가
-  const handleTraingAddClick = (e) => {
-    const value = {
-      text: e.currentTarget.previousElementSibling.value,
-      seq: null
-    };
-    setTrainingPhrase([value, ...trainingPhrases]);
-
-    e.currentTarget.previousElementSibling.value = "";
-  };
-
-  // 리스트 클릭시 삭제
-  const handleTraingDeleteClick = (e, index) => {
-    const seq = e.currentTarget.previousElementSibling.dataset.seq;
-
-    if (trainingPhrases[index].seq !== null) {
-      const copyTraing = [...trainingPhrases].filter(
-        (item) => item.seq == seq
-      )[0];
-      setDeleteTrainingPhrases((prevState) => [...prevState, copyTraing]);
-
-      setTrainingPhrase((preState) =>
-        preState.filter((item) => item.seq != seq)
-      );
-    } else {
-      setTrainingPhrase((preState) =>
-        preState.filter((item, idx) => idx != index)
-      );
-    }
-  };
-
   // 그리드 행추가
   const handleAddRow = () => {
-    test();
-    // setRowData([{ entityId: "", slotPrompt: "", slotSeq: null }, ...rowData]);
-  };
-
-  const handleDeletRow = (props) => {
-    const seq = props.data.slotSeq;
-    const entityId = props.data.entityId;
-    if (seq === null) {
-      setRowData((prevState) =>
-        prevState.filter((_, idx) => idx !== props.rowIndex)
-      );
-    } else {
-      setRowData((prevState) =>
-        prevState.filter(
-          (item) => !(item.slotSeq === seq && item.entityId === entityId)
-        )
-      );
-      setDeleteSlot((prevData) => [...prevData, props.data]);
-    }
+    handleMsgAdd();
   };
 
   // 모달 행추가
@@ -317,6 +260,8 @@ const IntentInfo = () => {
         entityId: selectRow.current.entityId
       };
       setModalRowData([value, ...modalRowData]);
+
+      e.target.value = "";
     }
   };
 
@@ -336,6 +281,7 @@ const IntentInfo = () => {
 
   // textarea 수정
   const handleResponesPhrasesUpdate = (e) => {
+    e.persist();
     let value = e.target.value.toLowerCase();
     setTimeout(() => {
       if (value === e.target.value.toLowerCase()) {
@@ -344,17 +290,22 @@ const IntentInfo = () => {
     }, 400);
   };
 
-  const test = async () => {
+  // contextMenu 메시지 추가
+  const handleMsgAdd = async () => {
     const selectRowData = selectRow.current;
-    console.log(selectRowData);
-    if (selectRowData.cnt > 1) {
+    if (selectRowData.cnt > 0) {
       const res = await getEntitySlotPromptApi(selectRowData);
       setModalRowData(res);
     }
     setModalOpen(true);
+    setSelectedOption({
+      value: selectRowData.entityId,
+      label: selectRowData.entityId
+    });
   };
 
-  const test2 = () => {
+  // contextMenu 행삭제
+  const handleRowDelete = () => {
     const selectRowData = selectRow.current;
 
     alertConfirm({
@@ -365,10 +316,12 @@ const IntentInfo = () => {
         setRowData((prevState) =>
           prevState.filter((item) => item.entityId !== selectRowData.entityId)
         );
-        if (selectRowData.cnt > 1) {
+        selectRowData;
+        if (selectRowData.cnt > 0) {
           const deleteData = {
             entityId: selectRowData.entityId,
-            intentId: intentId
+            intentId: intentId,
+            slotSeq: selectRowData.slotSeq
           };
           const newDeleteSlot = [...deleteSlot, deleteData];
           setDeleteSlot(newDeleteSlot);
@@ -380,7 +333,6 @@ const IntentInfo = () => {
   // 모달 셀렉트 값 변경
   const handleChange = async (item) => {
     const entityId = rowData.map((item) => item.entityId);
-
     const isValueExist = entityId.includes(item.value);
 
     if (isValueExist) {
@@ -392,95 +344,129 @@ const IntentInfo = () => {
       return;
     } else {
       setSelectedOption(item);
-      const res = await getEntitySlotPromptApi(item.value);
+      const res = await getEntitySlotPromptApi({ entityId: item.value });
       setModalRowData(res);
     }
   };
 
+  // 모달 저장
+  const handleModalSave = () => {
+    alertConfirm({
+      icon: "question",
+      title: "저장",
+      text: "저장하시겠습니까?",
+      callback: async () => {
+        const param = {
+          intentId: intentId,
+          entityId: selectedOption.value,
+          deleteSlotPrompt: deleteSlotPrompt,
+          slotPrompt: modalRowData
+        };
+
+        const respone = await savePropmptApi(param);
+
+        setRowData(JSON.parse(respone.entityIds));
+
+        handleModalColse();
+      }
+    });
+  };
+
+  // 모달 창닫기
+  const handleModalColse = () => {
+    setModalOpen(false);
+    setSelectedOption(null);
+    setModalRowData([]);
+    setDeleteSlotPrompt([]);
+    selectRow.current = {};
+  };
+
   return (
     <div className="info_wrap">
-      <ContextMenu id={`contextMenu`} className="contextMenu">
-          <MenuItem className="contextItem" onClick={test2}>
-            삭제
-          </MenuItem>
-          <MenuItem className="contextItem" onClick={test}>
-            메시지 추가
-          </MenuItem>
-        </ContextMenu>
+      {/* <ContextMenu
+        id={`contextMenu`}
+        className="contextMenu"
+        onHide={toggleMenu}
+        onShow={toggleMenu}
+      >
+        <MenuItem className="contextItem" onClick={handleRowDelete}>
+          삭제
+        </MenuItem>
+        <MenuItem className="contextItem" onClick={handleMsgAdd}>
+          메시지 추가
+        </MenuItem>
+      </ContextMenu> */}
       <div className="item_wrap">
-        <Item
-          title="Intent Name"
-          buttonList={[{ buttonName: "저장", onClick: handleSave }]}
-        >
-          <input
-            className="item_input"
-            type="text"
-            placeholder="인텐트명을 입력해주세요"
-            defaultValue={intentName}
-            onChange={handleIntentNameUpdate}
-          />
-        </Item>
+        <div className="item">
+          <Item
+            title="Intent Name"
+            buttonList={[{ buttonName: "저장", onClick: handleSave }]}
+          >
+            <input
+              className="item_input"
+              type="text"
+              placeholder="인텐트명을 입력해주세요"
+              defaultValue={intentName}
+              onChange={handleIntentNameUpdate}
+            />
+          </Item>
 
-        <Item title="Intent Description">
-          <input
-            className="item_input"
-            type="text"
-            placeholder="인텐트 설명을 입력해주세요"
-            defaultValue={intentDesc}
-            onChange={handleIntentDescUpdate}
-          />
-        </Item>
+          <Item title="Intent Description">
+            <input
+              className="item_input"
+              type="text"
+              placeholder="인텐트 설명을 입력해주세요"
+              defaultValue={intentDesc}
+              onChange={handleIntentDescUpdate}
+            />
+          </Item>
 
-        <Item title="Traning Phrases">
-          <PagingList
-            list={trainingPhrases}
-            input={true}
-            inputPlaceHolder={"학습 문구를 등록해주세요"}
-            postPage={5}
-            paging={true}
-            handleAdd={handleTraningAdd}
-            handleUpdate={handleTraingUpdate}
-            handleClickAdd={handleTraingAddClick}
-            handleClickDelete={handleTraingDeleteClick}
-          />
-        </Item>
+          <Item title="Traning Phrases">
+            <PagingList
+              list={trainingPhrases}
+              setList={setTrainingPhrase}
+              setDeletList={setDeleteTrainingPhrases}
+              input={true}
+              inputPlaceHolder={"학습 문구를 등록해주세요"}
+              postPage={5}
+              paging={true}
+            />
+          </Item>
 
-        <Item
-          title="Required"
-          buttonList={[{ buttonName: "행추가", onClick: handleAddRow }]}
-        >
-          <PagingGrid
-            rowData={rowData}
-            columnDefs={colDefs}
-            gridHeigth={300}
-            postPage={5}
-          />
-        </Item>
+          <Item
+            title="Required"
+            buttonList={[
+              { buttonName: "행추가", onClick: handleAddRow, variant: "normal" }
+            ]}
+          >
+            <PagingGrid
+              rowData={rowData}
+              columnDefs={colDefs}
+              gridHeigth={300}
+              postPage={5}
+            />
+          </Item>
 
-        <Item title="Response Phrases">
-          <textarea
-            className="item_textarea"
-            cols="30"
-            rows="10"
-            defaultValue={responesPhrases}
-            onChange={handleResponesPhrasesUpdate}
-          ></textarea>
-        </Item>
+          <Item title="Response Phrases">
+            <textarea
+              className="item_textarea"
+              cols="30"
+              rows="10"
+              defaultValue={responesPhrases}
+              onChange={handleResponesPhrasesUpdate}
+            ></textarea>
+          </Item>
+        </div>
       </div>
 
       <Modal
         isOpen={modalOpen}
         title={"Message"}
-        handleClick={() => {
-          console.log(deleteSlotPrompt);
-        }}
-        closeModal={() => {
-          setModalOpen(false);
-          setSelectedOption(null);
-          setModalRowData([]);
-          selectRow.current = {};
-        }}
+        handleClick={handleModalSave}
+        buttonText={"저장"}
+        closeModal={handleModalColse}
         modalBackground={modalBackground}
+        width={"700px"}
       >
         <div className="item_table_wrap">
           <table className="item_table">
@@ -510,11 +496,38 @@ const IntentInfo = () => {
           <AgGridReact rowData={modalRowData} columnDefs={modalColDefs} />
         </div>
         <input
-          className="item_input"
+          className="item_input mb-10"
           type="text"
           placeholder="신규 Prompt 를 입력해주세요"
           onKeyDown={handleModalAddRow}
         />
+
+        {/* <div className="item_table_wrap">
+          <table className="item_table">
+            <thead>
+              <tr>
+                <th className="item_table_head">ViewType</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="item_table_td">
+                  <Select
+                    options={entityEnum}
+                    onChange={handleChange}
+                    value={selectedOption}
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div
+          className="ag-theme-quartz"
+          style={{ height: "260.5px", marginBottom: "10px" }}
+        >
+          <AgGridReact rowData={modalRowData} columnDefs={modalColDefs} />
+        </div> */}
       </Modal>
     </div>
   );

@@ -1,11 +1,14 @@
 import axios from "axios";
+import store from "../reducers/store";
+import { logout } from "../reducers/action";
 
 import { alertSuccess, alertError } from "../hooks/useAlert";
 
 const api = axios.create({
   baseURL: `http://localhost:7077/`,
   headers: {
-    "X-Requested-With": "XMLHttpRequest" // CORS preflight 요청에 필요할 수 있음
+    "X-Requested-With": "XMLHttpRequest", // CORS preflight 요청에 필요할 수 있음
+    "Content-Type": "application/json"
   }
 });
 
@@ -16,18 +19,17 @@ api.interceptors.request.use(
   (config) => {
     // request 정상
     // header 셋팅
-    config.headers["Content-Type"] = "application/json";
     config.headers["Access-Control-Expose-Headers"] = "Authorization";
 
     // 토큰 확인
-    const token = localStorage.getItem("user") ?? null;
-    console.log("토근", token);
+    const token = localStorage.getItem("token") ?? null;
     if (token !== null) {
       config.headers["Authorization"] =
         `Bearer ${JSON.parse(token).accessToken}`;
+
+      config.data.compCd = JSON.parse(localStorage.getItem("user")).compCd;
     }
 
-    console.log("config", config);
     return config;
   },
   (error) => {
@@ -45,35 +47,61 @@ api.interceptors.response.use(
     const newToken = response.headers["authorization"];
 
     if (newToken !== undefined) {
-      const userInfo = JSON.parse(localStorage.getItem("user"));
-      const oldToken = userInfo.accessToken;
+      const token = JSON.parse(localStorage.getItem("token"));
+      const oldToken = token.accessToken;
       if (oldToken !== newToken) {
-        userInfo.accessToken = newToken.split(/\s+/g)[1];
-        localStorage.setItem("user", JSON.stringify(userInfo));
+        token.accessToken = newToken.split(/\s+/g)[1];
+        localStorage.setItem("token", JSON.stringify(token));
       }
     }
 
-    return response;
+    return response.data;
   },
   (error) => {
     //response 에러
-    console.log(error);
-
-    if (error.response.status === 401) {
-      //권한 없음
-      // localStorage.removeItem("user");
-      // alertError("로그인이 필요합니다.");
-      // location.reload();
-    }
     console.log("에러발생!");
+    console.log("error : ", error);
+
+    if (error.response?.status === 401) {
+      // 권한 없음
+      alertError("로그인이 필요합니다.", error.response.status, () => {
+        store.dispatch(
+          logout({ userId: JSON.parse(localStorage.getItem("user")).userId })
+        );
+      });
+    } else if (error.code === "ERR_NETWORK") {
+      alertError("서버와 통신이 원활하지 않습니다.", error.code);
+    } else {
+      alertError(error.response?.data.message, error.response?.status);
+    }
     return Promise.reject(error);
   }
 );
 
+/**
+ * 로그인 요청
+ * @param {*} param
+ * @returns
+ */
 export const loginApi = async (param) => {
   const response = await api.post(`auth/login`, param);
-  console.log("로그인 : ", response);
   return response;
+};
+
+/**
+ * 로그아웃 요청
+ * @param {*} param
+ * @returns
+ */
+export const logoutApi = async (param) => {
+  const respone = await api.post(`auth/logout`, param);
+  return respone;
+};
+
+export const menuApi = async (param) => {
+  const respone = await api.post(`auth/menu`, param);
+
+  return respone.data;
 };
 
 /**
@@ -91,7 +119,9 @@ export const getIntentsApi = async () => {
  * @returns
  */
 export const deletedIntendApi = async (indentId) => {
-  const response = await api.delete(`intent/${indentId}`);
+  const response = await api.delete(`intent`, {
+    data: { intentId: indentId }
+  });
   return response;
 };
 
@@ -102,7 +132,8 @@ export const deletedIntendApi = async (indentId) => {
  */
 export const getIntentInfoApi = async (indentId) => {
   const param = { intentId: indentId };
-  const response = await api.post(`intent/find`, param);
+  const response = await api.post(`intent`, param);
+
   return response.data;
 };
 
@@ -111,13 +142,34 @@ export const getIntentInfoApi = async (indentId) => {
  * @param {object} param
  */
 export const saveIntentInfoApi = async (param) => {
-  const response = await api.put(`intent/save`, param);
-  response.status == 200
-    ? alertSuccess({
-        title: "저장",
-        text: "정상적으로 저장되었습니다."
-      })
-    : alertError();
+  const response = await api.put(`intent`, param);
+
+  if (response.status == "OK") {
+    alertSuccess({
+      title: "저장",
+      text: response.message
+    });
+
+    return response.data;
+  }
+};
+
+/**
+ * slot 저장
+ * @param {object} param
+ * @returns
+ */
+export const savePropmptApi = async (param) => {
+  const response = await api.put(`intent/prompt`, param);
+
+  if (response.status == "OK") {
+    alertSuccess({
+      title: "저장",
+      text: response.message
+    });
+
+    return response.data;
+  }
 };
 
 /**
@@ -126,12 +178,13 @@ export const saveIntentInfoApi = async (param) => {
  * @returns
  */
 export const saveEntityIdApi = async (param) => {
+  //console.log("param: ", param)
   const response = await api.put("ent", param);
-  return response.data;
+  return response;
 };
 
 export const getEntitySlotPromptApi = async (param) => {
-  const respone = await api.post(`intent/find/prompt`, param);
+  const respone = await api.post(`intent/prompt`, param);
   return respone.data;
 };
 
@@ -161,10 +214,9 @@ export const getEntityWordApi = async (entityId) => {
  * @returns
  */
 export const saveEntityInfoApi = async (param) => {
-  console.log("확인 : ", param);
+  //console.log("확인 : ", param);
   const response = await api.put(`ent/collection`, param);
-  console.log(response);
-  return response.data;
+  return response;
 };
 
 /**
@@ -173,6 +225,153 @@ export const saveEntityInfoApi = async (param) => {
  * @returns
  */
 export const deleteEntityIdApi = async (entityId) => {
-  const response = await api.delete(`ent/${entityId}`);
+  const param = { entityId: entityId };
+  const response = await api.post(`ent/delete`, param);
+  return response;
+};
+
+/**
+ * 회원가입_이메일(id) 중복확인
+ * @param userId
+ * @returns
+ */
+export const checkUserIdApi = async (userId) => {
+  const param = { userId: userId };
+  console.log("param: ", param);
+  const response = await api.post(`signup/checkId`, param);
+  return response;
+};
+
+/**
+ * 회원가입 저장
+ * @param param
+ * @returns
+ */
+export const saveUserInfoApi = async (param) => {
+  console.log("param: ", param);
+  const response = await api.put(`signup/saveInfo`, param);
+  return response;
+};
+
+/**
+ * 회원정보 조회
+ * @param userId
+ * @returns
+ */
+export const getUserInfoApi = async (userId) => {
+  const param = { userId: userId };
+  const response = await api.post(`userInfo`, param);
+  return response.data;
+};
+
+/**
+ * 회원정보 수정
+ * @param param
+ * @returns
+ */
+export const updateUserInfoApi = async (param) => {
+  console.log("param: ", param);
+  const response = await api.put(`userInfo/updateInfo`, param);
+  return response;
+};
+
+/**
+ * fallback 리스트 조회
+ */
+export const getFallbackApi = async () => {
+  const response = await api.post(`intent/fallback`, {});
+  return response.data;
+};
+
+/**
+ * fallback 저장
+ * @param {} param
+ * @returns
+ */
+export const saveFallbackApi = async (param) => {
+  const response = await api.put(`intent/fallback/save`, param);
+  if (response.status == "OK") {
+    alertSuccess({
+      title: "저장",
+      text: response.message
+    });
+
+    return response.data;
+  }
+};
+
+/**
+ * Analyze 초기화
+ * @returns
+ */
+export const getAnalyzeInitApi = async () => {
+  const response = await api.post(`analyze/init`, {});
+  return response.data;
+};
+
+export const getHistoryApi = async (param) => {
+  const response = await api.post(`analyze/history`, param);
+  return response.data;
+};
+
+export const deleteConversationApi = async (param) => {
+  const response = await api.delete(`analyze/history`, { data: param });
+  if (response.status === "OK") {
+    alertSuccess({
+      title: "삭제",
+      text: response.message
+    });
+  }
+  return response.status;
+};
+
+/**
+ * 실패 메시지 조회
+ * @param {*} param
+ * @returns
+ */
+export const getAnswerFailedApi = async (param) => {
+  const response = await api.post(`analyze/answerfailed`, param);
+  return response.data;
+};
+
+/**
+ * 실패 메시지 삭제
+ * @param {*} param
+ * @returns
+ */
+export const deleteAnswerFailedApi = async (param) => {
+  const response = await api.delete(`analyze/answerfailed`, {
+    data: param
+  });
+
+  if (response.status === "OK") {
+    alertSuccess({
+      title: "삭제",
+      text: response.message
+    });
+  }
+  return response.status;
+};
+
+/**
+ * 아이디/비밀번호 찾기
+ * @param param
+ * @returns
+ */
+export const findUserInfoApi = async (param) => {
+  console.log("param: ", param);
+  const response = await api.post(`userInfo/find/userInfo`, param);
+  return response.data;
+};
+
+/**
+ * 비밀번호 변경
+ * @param param
+ * @returns
+ */
+export const UpdateUserPwdApi = async (param) => {
+  console.log("param: ", param);
+  const response = await api.put(`userInfo/find/updatePwd`, param);
   return response.data;
 };

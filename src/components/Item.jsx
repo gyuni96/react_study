@@ -10,7 +10,7 @@ const Item = ({ children, title, buttonList }) => {
         {typeof buttonList !== "undefined"
           ? buttonList.map((btn, idx) => {
               return (
-                <Button onClick={btn.onClick} key={idx}>
+                <Button onClick={btn.onClick} key={idx} variant={btn.variant}>
                   {btn.buttonName}
                 </Button>
               );
@@ -32,7 +32,7 @@ const ItemWrap = styled.div`
 `;
 
 const ItemTitle = styled.h4`
-  font-size: 1.3em;
+  font-size: 1.3rem;
   color: #6a6e79;
 `;
 

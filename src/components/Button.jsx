@@ -64,7 +64,7 @@ const StyledButton = styled.button`
   ${(p) => p.sizestyle}
   ${(p) => p.variantstyle}
 
-  
+  flex-shrink: 0;
   margin: 0;
   border: none;
   cursor: pointer;
@@ -72,9 +72,10 @@ const StyledButton = styled.button`
   font-size: var(--button-font-size, 1rem);
   padding: var(--button-padding, 12px 16px);
   border-radius: var(--button-radius, 8px);
-  background: var(--button-bg-color, #0d6efd);
+  background: var(--button-bg-color, ${(props) => props.theme.hoverColor});
   color: var(--button-color, #ffffff);
   margin-right: 10px;
+  transition: 0.3s ease;
 
   &:last-child {
     margin-right: 0;
@@ -83,12 +84,18 @@ const StyledButton = styled.button`
   &:active,
   &:hover,
   &:focus {
-    background: var(--button-hover-bg-color, #025ce2);
+    background: var(
+      --button-hover-bg-color,
+      ${(props) => props.theme.thickHoverColor}
+    );
   }
 
   &:disabled {
     cursor: default;
     opacity: 0.5;
-    background: var(--button-bg-color, #025ce2);
+    background: var(
+      --button-bg-color,
+      ${(props) => props.theme.thickHoverColor}
+    );
   }
 `;

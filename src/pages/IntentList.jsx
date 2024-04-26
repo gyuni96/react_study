@@ -8,19 +8,14 @@ import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 
 const IntentList = () => {
-  const [intentList, setIntentList] = useState([
-    {intentNm : 'aa', intentDesc : 'aa', intentId : '1'},
-    {intentNm : 'bb', intentDesc : 'bb', intentId : '2'},
-    // {intentNm : 'cc', intentDesc : 'cc', intentId : '3'},
-    // {intentNm : 'dd', intentDesc : 'dd', intentId : '4'},
-  ]);
+  const [intentList, setIntentList] = useState([]);
   const navigate = useNavigate();
 
   // 페이지 진입시
   useEffect(() => {
     const setData = async () => {
-      // const data = await getIntentsApi();
-      // setIntentList(data);
+      const data = await getIntentsApi();
+      setIntentList(data);
     };
     setData();
   }, []);
@@ -45,7 +40,7 @@ const IntentList = () => {
         //삭제 API call
         deletedIntendApi(intentId)
           .then((res) => {
-            if (res.data === "deleted successfully") {
+            if (res === "deleted successfully") {
               alertSuccess({
                 title: "삭제",
                 text: "정상적으로 삭제되었습니다"
@@ -60,12 +55,18 @@ const IntentList = () => {
   return (
     <>
       <div className="card_grid">
-        <AddCard>
+        <AddCard onClick={clickHandler} data-itemid="new">
           <FontAwesomeIcon icon={faFolderPlus} size="4x" />
         </AddCard>
-        {/* <div className="card_add" onClick={clickHandler} data-itemid="new">
-          
-        </div> */}
+        <Card
+          name={"fallback"}
+          id={"fallback"}
+          desc={"fallback 메시지"}
+          clickHandler={(e) => {
+            const intentId = e.currentTarget.dataset.itemid;
+            navigate(`/${intentId}`);
+          }}
+        />
         {intentList.map((item, idx) => {
           return (
             <Card
@@ -85,16 +86,17 @@ const IntentList = () => {
 
 export default IntentList;
 
-
 const AddCard = styled.div`
   position: relative;
-  background-color: ${props=> props.theme.themeColor};
-  color: ${props=> props.theme.hoverColor};
+  background-color: ${(props) => props.theme.themeColor};
+  color: ${(props) => props.theme.hoverColor};
+  /* background-color: #e1e1e1; */
+  /* color: #747474; */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 300px;
-  height: 220px;
+  width: 280px;
+  height: 170px;
   border-radius: 10px;
   margin-bottom: 20px;
   transition: 0.3s ease;
@@ -102,7 +104,7 @@ const AddCard = styled.div`
     0 14px 28px rgba(0, 0, 0, 0.15),
     0 10px 10px rgba(0, 0, 0, 0.12);
   &:hover {
-    background-color: ${(props)=>props.theme.hoverColor};
+    background-color: ${(props) => props.theme.hoverColor};
     color: #fff;
   }
-`
+`;
